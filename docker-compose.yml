@@ -1,4 +1,4 @@
-version: '3.7'
+60version: '3.7'
 
 services:
   shields_service:
@@ -7,15 +7,19 @@ services:
     image: docker.io/shieldsio/shields:$SHIELDS_VERSION
     environment:
       - PORT=$SHIEDS_PORT
+      # RASTER_SERVER : https://raster.pok-us.io
+      - RASTER_SERVER=http://${DOCKHOST_IP_ADDR}:5079/
     # env_file:
       # - .compose.env # atually no, same [.env] file ... ?
     env_file:
       - .compose.env
     ports:
-      - 0.0.0.0:5080:$SHIEDS_PORT
-    entrypoint: /bin/sh
-    stdin_open: true
-    tty: true
+      - 0.0.0.0:6080:$SHIEDS_PORT
+    volumes:
+      - config/pokus.yml:/usr/src/app/config/local.yml
+    # entrypoint: /bin/sh
+    # stdin_open: true
+    # tty: true
     # volumes:
       # - $PWD/shields/data:/path/to/folder/in/container
 

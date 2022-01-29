@@ -1,6 +1,29 @@
 public:
+  metrics:
+    prometheus:
+      enabled: true
+    influx:
+      enabled: true
+      # url: https://metrics.shields.io/telegraf
+      url: https://metrics.pok-us.io/telegraf
+      instanceIdFrom: env-var
+      # instanceIdEnvVarName: HEROKU_DYNO_ID
+      instanceIdEnvVarName: POKUS_DYNO_ID
+      envLabel: shields-production
+
+  ssl:
+    isSecure: true
+
+  cors:
+    allowedOrigin: ['*']
+    # allowedOrigin: ['http://shields.io', 'https://shields.io']
+
+  # -> The raster service : when there is one, and it is independent (not insame container, not in same k8s deployment)
+  rasterUrl: 'https://raster.pok-us.io'
   services:
     drone:
-      authorizedOrigins: ['https://drone.example.com']
+      # authorizedOrigins: ['https://drone.example.com']
+      authorizedOrigins: ['*']
+
 private:
-  drone_token: '...'
+  drone_token: 'value of the drone token here'

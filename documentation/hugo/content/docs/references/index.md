@@ -1,24 +1,9 @@
-# The Shields Experiment
+---
+title: 'References'
+date: 2022-01-29T10:13:37+10:50
+weight: 8
+---
 
-One day, i learned how quickly you can set up a visitor counter using `visitor-badge.glitch.me`.
-
-That Day, I realized how beautifully powerful the badge pattern can be: try implement a visitor counter yourself, from scratch, that can count visits with a different counter for every page...
-
-All in all, this work is about designing an architecture for a static website :
-* the static website is managed with one of the following CMS : `hugo`, `Gatsby`, `Directus`, etc...
-* the static website has many features thanks to badges :
-  * visitor counter
-  * [soon more..]
-
-## Architecture
-
-![Architecture big pic](./documentation/images/architecture/architecture-all.drawio.png)
-
-## DevOps
-
-
-
-## References
 
 * Shields.io :
   * https://shields.io/category/social
@@ -34,6 +19,8 @@ All in all, this work is about designing an architecture for a static website :
   * I wanna provide a solution where we nuild our own dedicated CDN, using `KubeCDN`
   * One tutorial about `KubeCDN` : https://blog.insightdatascience.com/how-to-build-your-own-cdn-with-kubernetes-5cab00d5c258
   * `KubeCDN` repo :
+
+
 ## About Secrets Management and CORS
 
 

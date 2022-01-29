@@ -55,7 +55,7 @@ You have now access to the Web Ui of Drone, at https://drone.pok-us.io/
 export POKUS_GITEA_SSH_PORT=2224
 # cat ~/.ssh/id_rsa.pub
 # Then add that SSH Key as SSH Key for your Gitea User, with Gitea Web UI
-git clone ssh://git@gitea.pok-us.io:${POKUS_GITEA_SSH_PORT}/pokus/jbltest.git
+git clone ssh://robots@shields.pok-us.io:${POKUS_GITEA_SSH_PORT}/pokus/jbltest.git
 cd jbltest/
 touch README.md
 git add -A && git commit -m "initial commit"

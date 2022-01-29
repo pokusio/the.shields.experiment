@@ -1,0 +1,52 @@
+{
+  "apps": {
+    "http": {
+      "servers": {
+        "example": {
+          "listen": [
+            ":80",
+            ":443"
+          ],
+          "routes": [{
+            "match": [{
+              "host": [
+                "gitea.pok-us.io"
+              ]
+            }],
+            "handle": [{
+              "handler": "subroute",
+              "routes": [{
+                "handle": [{
+                  "handler": "reverse_proxy",
+                  "upstreams": [{
+                    "dial": "gitea_server:3000"
+                  }]
+                }]
+              }]
+            }]
+          }]
+        }
+      }
+    },
+    "tls": {
+      "automation": {
+        "policies": [{
+          "subjects": [
+            "gitea.pok-us.io"
+          ],
+          "issuer": {
+            "challenges": {
+              "dns": {
+                "provider": {
+                  "name": "letsencrypt"
+                }
+              }
+            },
+            "email": "pokus-gitea@pokus.io",
+            "module": "acme"
+          }
+        }]
+      }
+    }
+  }
+}

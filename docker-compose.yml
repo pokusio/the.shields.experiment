@@ -104,10 +104,10 @@ services:
   # ---
   pokus_reverse_proxy:
     # command: /usr/bin/caddy file-server --domain caddy.pok-us.io
-    image: pokusio/caddy:caddy-$POKUS_CADDY_VERSION
+    image: $POKUS_OCI_REGISTRY/pokusio/caddy:caddy-$POKUS_CADDY_VERSION
     restart: unless-stopped
     build:
-      context: caddy/oci/
+      context: oci/caddy/
       dockerfile: pokus.Dockerfile
       args:
         - POKUS_CADDY_VERSION=$POKUS_CADDY_VERSION

@@ -16,7 +16,7 @@ sed -i "s#POKUS_USER_GID_PLACEHOLDER#${POKUS_USER_GID}#g" ./.prod.env
 # -- Generate the RSA SSH Key Pair for the gitea host
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
-export LE_COMMENTAIRE_DE_CLEF="git@gitea.pok-us.io"
+export LE_COMMENTAIRE_DE_CLEF="robots@shields.pok-us.io"
 export POKUS_DEFAULT_PRIVATE_KEY_PASSPHRASE=""
 export PRIVATE_KEY_FULLPATH=$(pwd)/donnees/gitea/.ssh/id_rsa
 

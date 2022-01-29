@@ -1,45 +1,5 @@
 #!/bin/sh
 
-uploadConfigurationToCaddyNEUTREULIZED() {
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo "# ++++ uploadConfigurationToCaddyNEUTREULIZED"
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-}
-
-uploadConfigurationToCaddy() {
-
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [uploadConfigurationToCaddy()] - TEST EXISTENCE OF [/pokus/run/caddy.json] file : "
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  ls -alh /pokus/run/caddy.json || exit 45
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [uploadConfigurationToCaddy()] - VIEW CONTENT OF [/pokus/run/caddy.json] file : "
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  cat /pokus/run/caddy.json || exit 45
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [uploadConfigurationToCaddy()] - HTTP REQUEST TO LOAD CADDY CONFIG : "
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [curl -ivvv 0.0.0.0:443/load -X POST -H \"Content-Type: application/json\" -d @caddy.json || true]"
-  # This request against Caddy Server to upload the caddy.json configuration to the Caddy Server
-  curl -ivvv 0.0.0.0:443/load -X POST -H "Content-Type: application/json" -d @caddy.json || true
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [uploadConfigurationToCaddy()] - HTTP REQUEST TO LOAD CADDY CONFIG : "
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-  echo " [curl -ivvv localhost:443/load -X POST -H \"Content-Type: application/json\" -d @caddy.json || true]"
-  # This request against Caddy Server to upload the caddy.json configuration to the Caddy Server
-  curl -ivvv localhost:443/load -X POST -H "Content-Type: application/json" -d @caddy.json || true
-  echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-
-}
 
 if [ "x${POKUS_CADDYFILE}" == "x" ]; then
   echo "Fatal Error: POKUS_CADDYFILE env var is not defined"
@@ -156,18 +116,22 @@ while true; do
         echo "# ---   [LOOP TO DETECT CADDY STARTED] - configure caddy using a caddy.json"
         echo "# -------------------------------------------------------------------------------- #"
 
-        # gitea admin create-user --admin --username $POKUS_ADMIN_USER --password $POKUS_ADMIN_PASSWORD --email your@email.org --must-change-password=false && uploadConfigurationToCaddy
+        # [exampleAwesomeSoftware] admin create-user --admin --username $POKUS_ADMIN_USER --password $POKUS_ADMIN_PASSWORD --email your@email.org --must-change-password=false && uploadConfigurationToCaddy
       	echo "# >>>>++++++++++++++++++++++++++++++ #"
       	echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
       	echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
-      	echo "  INITIAL CADDY CONFIGURATION <<<<<< "
+      	echo "  INITIAL CONFIGURATION OF DEPENDENCIES <<<<<< "
       	echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
       	echo "# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #"
       	echo "# >>>>++++++++++++++++++++++++++++++ #"
-        # this command cannot be executed as long as the gitea install webui button is pressed...
-        # gitea admin user create --admin --username $POKUS_ADMIN_USER --password $POKUS_ADMIN_PASSWORD --email pokus@pokus-io.org --access-token pokusdrone | tee ./gitea.cli.stdout
+
+        # Here you run commands to initialze your dependencies
+
+
+        # this command cannot be executed as long as the [exampleAwesomeSoftware] install webui button is pressed...
+        # [exampleAwesomeSoftware] admin user create --admin --username $POKUS_ADMIN_USER --password $POKUS_ADMIN_PASSWORD --email pokus@pokus-io.org --access-token pokusdrone | tee ./[exampleAwesomeSoftware].cli.stdout
         # uploadConfigurationToCaddy
-        uploadConfigurationToCaddyNEUTREULIZED
+        # uploadConfigurationToCaddyNEUTREULIZED
         echo "# -------------------------------------------------------------------------------- #"
         # echo "# ---   [LOOP TO DETECT CADDY STARTED] - CCCC=[${CCCC}]  "
         echo "# -------------------------------------------------------------------------------- #"

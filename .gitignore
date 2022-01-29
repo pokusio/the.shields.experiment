@@ -1,2 +1,6 @@
 temp/
 node_modules
+documentation/hugo/public
+# docs is for the github pages
+docs/
+!docs/README.md

@@ -12,10 +12,11 @@ public:
       envLabel: shields-production
 
   ssl:
-    isSecure: true
+    isSecure: false
+    # isSecure: true
 
   cors:
-    allowedOrigin: ['*']
+    allowedOrigin: ['http://*.pok-us.io', 'http://*.pokus.io', 'http://*.pokus-shields.io', 'http://*.pok-us-shields.io', 'http://192.168.168.6']
     # allowedOrigin: ['http://shields.io', 'https://shields.io']
 
   # -> The raster service : when there is one, and it is independent (not insame container, not in same k8s deployment)
@@ -23,7 +24,9 @@ public:
   services:
     drone:
       # authorizedOrigins: ['https://drone.example.com']
-      authorizedOrigins: ['*']
+      authorizedOrigins: ['http://*.pok-us.io', 'http://*.pokus.io', 'http://*.pokus-shields.io', 'http://*.pok-us-shields.io', 'http://192.168.168.6']
 
 private:
   drone_token: 'value of the drone token here'
+  influx_username: 'value of that secret'
+  influx_password: 'value of that secret'

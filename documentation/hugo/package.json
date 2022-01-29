@@ -1,0 +1,20 @@
+{
+  "name": "pokus-shields-docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "help": "echo \"set OS_DISTRIB to either 'macos' or 'linux'\" ",
+    "spawn": "echo \"spawn up new hugo project from Hugo theme\" && export OS_DISTRIB=${OS_DISTRIB:-'macos'} && ./.npm.scripts/${OS_DISTRIB}/spawn.sh",
+    "clean": "echo \"cleaning hugo project\" && export OS_DISTRIB=${OS_DISTRIB:-'macos'} && ./.npm.scripts/${OS_DISTRIB}/clean.sh",
+    "parse-hugo-them-toml": "node .npm.scripts/toml-parser.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bulma": "^0.9.3",
+    "concat-stream": "^2.0.0",
+    "toml": "^3.0.0"
+  }
+}

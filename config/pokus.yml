@@ -1,0 +1,6 @@
+public:
+  services:
+    drone:
+      authorizedOrigins: ['https://drone.example.com']
+private:
+  drone_token: '...'

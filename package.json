@@ -1,0 +1,17 @@
+{
+  "name": "pokus-shields-docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "hugo-spawn": "echo \"spawn up new hugo project from Hugo theme\" && ./.npm.scripts/spawn.sh",
+    "hugo-clean": "echo \"cleaning hugo project\" && ./.npm.scripts/clean.sh",
+    "start": "docker-compose up -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bulma": "^0.9.3"
+  }
+}

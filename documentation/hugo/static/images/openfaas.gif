@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>asciinema - Record and share your terminal sessions, the right way</title>
+    <link rel="stylesheet" href="/css/app-f9344241b59001f76d1c9f83ba24c3bf.css?vsn=d">
+    <link rel="shortcut icon" href="/images/favicon-2d62dafa447cf018340b7121007568e3.png?vsn=d">
+
+  </head>
+
+  <body class="l-app c-login a-new">
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo-red-949d10005bb389d1ae900a13b5ac53d7.svg?vsn=d">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/explore">Explore</span></a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/docs/getting-started">Record</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/docs/how-it-works">Docs</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="http://blog.asciinema.org">Blog</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav navbar-right session-info">
+
+            <li class="nav-item">
+              <a class="nav-link" href="/login/new" id="log-in">
+                Log in
+ / Sign up
+              </a>
+            </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
+  <section class="flash notice"><div class="container">Please log in first.</div></section>
+
+
+    <main role="main" class="">
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h1><span class="glyphicon glyphicon-user"></span> Log in</h1>
+      <br>
+<form action="/login" class="form-inline login-form" method="post"><input name="_csrf_token" type="hidden" value="ExpkBiU7PGMeQVEmJQUpL0wHQzczGidScRVYqkfZp58VGSLbaFp_ykA9">
+        <div class="form-group">
+<input class="form-control email" data-behavior="focus" id="login_email" name="login[email]" placeholder="Email address or username" type="text">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Log in</button>
+</form>
+
+      <br><br>
+    </div>
+
+    <div class="col-md-6">
+      <h2><span class="glyphicon glyphicon-info-sign"></span> First time here?</h1>
+
+        <p>We use email-based, passwordless login process. Enter your email
+          address and you'll receive a one-time login link. After you click it
+          you'll get in, and you'll be able to pick your username.</p>
+
+      <h2><span class="glyphicon glyphicon-info-sign"></span> Coming back?</h1>
+
+      <p>If you already have an account then enter either your username, or the
+        email address you used for the first time here. We'll send you an email
+        with a one-time login link.</p>
+
+    </div>
+  </div>
+</div>
+
+    </main>
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-xs-12">
+        <ul class="links">
+          <li><a href="/contributing">Contributing</a></li>
+          <li><a href="/tos">Terms of Service</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4 col-xs-12 text-center">
+        <span>
+          Sponsored by
+          <br/>
+          <a class="brightbox-logo" href="http://brightbox.com/" rel="nofollow">
+            <img src="/images/brightbox-78fa1dc42e5065bdbcc77f48e38b6dd3.png?vsn=d" />
+          </a>
+        </span>
+      </div>
+
+      <div class="col-md-4 col-xs-12">
+        <ul class="links float-right">
+          <li>
+            <b>forum:</b> <a href="https://discourse.asciinema.org">discourse.asciinema.org</a>
+          </li>
+          <li>
+            <b>irc:</b> <a href="https://web.libera.chat/gamja/#asciinema">#asciinema on Libera.Chat</a>
+          </li>
+          <li>
+              <b>matrix:</b> <a href="https://matrix.to/#/#asciinema:matrix.org">#asciinema:matrix.org</a>
+          </li>
+
+          <li>
+            <b>twitter:</b> <a href="https://twitter.com/asciinema" title="Follow @asciinema on Twitter">@asciinema</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/js/app-6c1bd65f2e976d5a38161dc02096ab50.js?vsn=d"></script>
+  </body>
+</html>

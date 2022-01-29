@@ -1,0 +1,54 @@
+baseURL = "https://radiojaune.com"
+languageCode = "en-us"
+title = "Radio Jaune"
+theme = "grayscale"
+#googleAnalytics = ""
+disableKinds = ["taxonomy", "taxonomyTerm"]
+
+[params]
+    # Provide some metadata for search and indexing services
+    description = "The hugo project for https://radiojaune.com"
+    # Radio jaune Discord Super Admin added the WidgetBot.io to the Discord server using https://add.widgetbot.io/
+    discord_server_id = "928030296241225758"
+    discord_channel_id = "929832574434562048"
+    discord_server_invitation = "https://discord.gg/KwCAUvwvc4"
+    thats_yellow = "#f7ff0b"
+    join_live_url = "https://studio.restream.io/guest/ejY4bEUwYtPXzBjDtEaYlc2NEgHA0iw?event=&default-camera-mirror=false"
+    twitch_channel_link = "https://www.twitch.tv/radiojaune"
+    twitch_channel_name = "radiojaune"
+    vk_channel_link = "https://vk.com/id698593797"
+    vk_live_url = "https://vk.com/video_ext.php?oid=698593797&id=456239017&hash=4f8bd321b291b5e4&hd=2"
+    rumble_channel_link = "https://rumble.com/radiojaune"
+    rumble_channel_name = "radiojaune"
+    telegram_group_link = "https://t.me/+MryZE0pY8N01ZGRk"
+    youtube_channel_id = "UCIUGDzUjNIfQC9YjUIu84vQ"
+    github_org = "https://github.com/radio-jaune"
+    github_repo = "https://github.com/radio-jaune/website"
+    github_pages = "https://github.com/radio-jaune/developers-portal"
+    # github_pages = "https://radio-jaune.github.io/documentation"
+    # github_pages = "https://developers.radio-jaune.com"
+    # discord_channel_id = "355719584830980096"
+[Author]
+    name = "The Yellow Radio Devops Team"
+    email = "devopsradiojaune@gmail.com"
+
+[Social]
+    twitter = "stream_running"
+
+
+[reveal_hugo.custom_theme_options]
+targetPath = "assets/custom-theme.css"
+enableSourceMap = true
+
+# --- # ---
+# Addon to us Bulma as integrated SCSS Processor
+
+[[module.imports]]
+  path = "github.com/jgthms/bulma"
+  disable = false
+  # [[module.imports.mounts]]
+    # source = "."
+    # target = "assets/sass"
+  [[module.imports.mounts]]
+    source = "."
+    target = "assets/bulma"

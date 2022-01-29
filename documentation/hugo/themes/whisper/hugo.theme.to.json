@@ -1,0 +1,26 @@
+
+> pokus-shields-docs@1.0.0 parse-hugo-them-toml /Users/jbl/the.shields.experiment/documentation/hugo
+> node .npm.scripts/toml-parser.js
+
+ value of TOML_FILE_PATH = /var/folders/ns/w2f2c8wd6yl_sd83q2ls75m80000gn/T/TEMP_SPAWN_HOME-XXXXXXXXXX.HUB1oQY1/theme.toml
+[Object: null prototype] {
+  name: 'Whisper',
+  license: 'MIT',
+  licenselink: 'https://github.com/pokus/hugo-whisper-theme/blob/master/LICENSE',
+  description: 'Whisper is a minimal documentation theme built for Hugo. The design and functionality is intentionally minimal.',
+  homepage: 'https://github.com/pokus/hugo-whisper-theme',
+  demosite: 'https://github.com/Jean-Baptiste-Lasselle',
+  tags: [
+    'docs',
+    'responsive',
+    'minimal',
+    'clean',
+    'bootstrap',
+    'pokus'
+  ],
+  features: [ 'docs', 'bootstrap', 'scss', 'netlify', 'google analytics' ],
+  author: [Object: null prototype] {
+    name: 'Robert Austin',
+    homepage: 'https://www.pok-us.io'
+  }
+}

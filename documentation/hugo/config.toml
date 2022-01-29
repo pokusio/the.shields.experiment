@@ -1,0 +1,72 @@
+baseURL = "https://pokus-shields.github.io/documentation/"
+languageCode = "en-us"
+title = "The Shields Experiment"
+themesDir = "./themes"
+theme = "whisper"
+
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsUseClasses = true
+
+[module]
+  [module.hugoVersion]
+    extended = true
+    min = "0.55.0"
+
+# Controls how many words are printed in the content summary on the docs homepage.
+# See https://gohugo.io/content-management/summaries/
+summaryLength = 30
+
+[[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+
+[[menu.main]]
+    name = "Docs"
+    url = "/docs/"
+    weight = 2
+
+[params]
+  google_analytics_id=""
+  homepage_button_link = '/docs'
+  homepage_button_text = 'Read The Docs'
+  homepage_intro = 'The Shields Experiment is a study of badges, using shields.io'
+  # homepage_image = '/images/terminal.gif'
+  homepage_image = '/images/pokus/openfaas.gif'
+
+  ## You can enable to add anchor links to header elements
+  # enable_anchor_link = true
+
+  [params.homepage_meta_tags]
+    meta_description = "The Shields Experiment is a study of badges, using shields.io, and an awesome documentation theme built with Hugo."
+    meta_og_title = "The Shields Experiment"
+    meta_og_type = "learning"
+    meta_og_url = "https://github.com/Jean-Baptiste-Lasselle"
+    meta_og_image = "https://raw.githubusercontent.com/JugglerX/hugo-whisper-theme/master/images/tn.png"
+    meta_og_description = "The Shields Experiment is a documentated study about badges, using shields.io"
+    meta_twitter_card = "summary"
+    meta_twitter_site = "@pokusio"
+    meta_twitter_creator = "@pokusio"
+
+  [params.logo]
+      mobile = "/images/logo-mobile.svg"
+      standard  = "/images/logo.svg"
+
+
+[reveal_hugo.custom_theme_options]
+targetPath = "assets/custom-theme.css"
+enableSourceMap = true
+
+# --- # ---
+# Addon to us Bulma as integrated SCSS Processor
+
+[[module.imports]]
+  path = "github.com/jgthms/bulma"
+  disable = false
+  # [[module.imports.mounts]]
+    # source = "."
+    # target = "assets/sass"
+  [[module.imports.mounts]]
+    source = "."
+    target = "assets/bulma"

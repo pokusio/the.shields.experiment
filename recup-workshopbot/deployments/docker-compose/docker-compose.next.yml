@@ -1,0 +1,259 @@
+version: "3"
+
+networks:
+  gitea_net:
+    external: false
+  drone_net:
+    external: false
+  vault-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+volumes:
+ gitea_data_folder:
+   driver: local
+ gitea_pokus_secrets:
+   driver: local
+ gitea_postgres_dbdata:
+   driver: local
+ drone_postgres_dbdata:
+   driver: local
+
+services:
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- GITEA
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  gitea_server:
+    # image: gitea/gitea:1.15.4
+    image: pokusio/gitea-server:gitea-1.15.4
+    build:
+      context: gitea/oci/
+      dockerfile: pokus.Dockerfile
+      arguments:
+        - POKUS_ADMIN_USER: POKUS
+        - POKUS_ADMIN_PASSWORD: POKUS
+        - GITEA_SHARED_SECRETS_HOME: '/pokus/.shared.secrets'
+    container_name: gitea
+    environment:
+      # https://docs.gitea.io/en-us/install-with-docker/#configure-the-user-inside-gitea-using-environment-variables
+      # - GITEA_USER=git
+      - USER: $GITEA_USER
+      # - POKUS_USER_UID=1000
+      - USER_UID: $POKUS_USER_UID
+      # - POKUS_USER_GID=1000
+      - USER_GID: $POKUS_USER_GID
+      - GITEA__database__DB_TYPE: 'postgres'
+      - GITEA__database__HOST: 'gitea_postgres_db.pok-us.io:5432'
+      - GITEA__database__NAME: 'gitea'
+      - GITEA__database__USER: 'gitea'
+      - GITEA__database__PASSWD: 'gitea'
+      # - ADMIN_USER: POKUS
+      # - ADMIN_PASSWORD: POKUS
+      - GITEA_SHARED_SECRETS_HOME: '/pokus/.shared.secrets'
+    restart: always
+    # networks:
+      # - gitea_net
+    networks:
+      - gitea_net:
+          aliases:
+            - gitea.pok-us.io
+      # gitea_net:
+        # aliases:
+          # - gitea.pok-us.io
+    volumes:
+      # - ./gitea:/data
+      - gitea_data_folder:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      # Otherwise the SSH authentication cannot work inside the container.
+      # So to manage the SSH identity of the gitea server, we geenrate an RSA SSH Key apir with default file names, inside the $PWD/gitea/.ssh/ folder
+      # Also, we could retrieve the SSH KEy Pair from HashiCorp Vault
+      - $PWD/gitea/.ssh/:/data/git/.ssh
+      - $PWD/gitea/app/gitea:/app/gitea/gitea
+      # --- #
+      # export GITEA_SHARED_SECRETS_HOME="/pokus/.shared.secrets"
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/gitea/api.token
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_id
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_secret
+      # --- #
+      - gitea_pokus_secrets:/pokus/.shared.secrets:rw
+    ports:
+      - "0.0.0.0:7300:3000"
+      - "0.0.0.0:2224:22"
+    depends_on:
+      - gitea_postgres_db
+
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- POSTGRES_DBs
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  gitea_postgres_db:
+    image: postgres:13
+    restart: always
+    container_name: gitea_postgres_db
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    networks:
+      - gitea_net:
+          aliases:
+            - gitea_postgres_db.pok-us.io
+      - drone_net:
+          aliases:
+            - gitea_postgres_db.pok-us.io
+    volumes:
+      # - ./postgres:/var/lib/postgresql/data
+      - gitea_postgres_dbdata:/var/lib/postgresql/data
+
+  drone_postgres_db:
+    image: postgres:13
+    restart: always
+    container_name: drone_postgres_db
+    environment:
+      - POSTGRES_USER=$DRONE_DB_SECRETS_USER_NAME
+      - POSTGRES_PASSWORD=$DRONE_DB_SECRETS_USER_PWD
+      - POSTGRES_DB=$DRONE_DATABASE_NAME
+    networks:
+      - gitea_net
+      - drone_net
+    volumes:
+      # - ./postgres:/var/lib/postgresql/data
+      - drone_postgres_dbdata:/var/lib/postgresql/data
+
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- DRONE CI
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # On try.gitea.io i got : Powered by Gitea Version: 1.16.0+dev-345-gf2a5d1b42
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  drone_server:
+    image: drone/drone:2
+    restart: always
+    container_name: drone_server
+    environment:
+      - DRONE_GITEA_SERVER: ${DRONE_GITEA_SERVER}
+      - DRONE_GITEA_CLIENT_ID: ${DRONE_GITEA_CLIENT_ID}
+      - DRONE_GITEA_CLIENT_SECRET: ${DRONE_GITEA_CLIENT_SECRET}
+      - DRONE_RPC_SECRET: ${DRONE_RPC_SECRET}
+      - DRONE_SERVER_HOST: ${DRONE_SERVER_HOST}
+      - DRONE_SERVER_PROTO: ${DRONE_SERVER_PROTO}
+      - DRONE_DATABASE_DRIVER: postgres
+      - DRONE_DATABASE_DATASOURCE: $DRONE_DATABASE_DATASOURCE
+    networks:
+      - gitea_net
+      - drone_net
+    ports:
+      - "0.0.0.0:9980:80"
+      - "0.0.0.0:9443:443"
+    volumes:
+      # - $PWD/postgres:/var/lib/postgresql/data
+      - $PWD/drone/data:/data
+    depends_on:
+      - drone_postgres_db
+  drone_runner:
+    image: drone/drone-runner-docker:1
+    restart: always
+    container_name: drone_runner
+    environment:
+      - DRONE_RPC_PROTO: https
+      - DRONE_RPC_HOST: ${DRONE_HOSTNAME}
+      - DRONE_RPC_SECRET: ${DRONE_RPC_SECRET}
+      - DRONE_RUNNER_CAPACITY: 5
+      - DRONE_RUNNER_NAME: ${DRONE_HOSTNAME}
+      - DRONE_SECRET_PLUGIN_ENDPOINT: 'http://drone-vault.pok-us.io:4300'
+      # - DRONE_SECRET_PLUGIN_ENDPOINT: 'http://vault.pok-us.io:6200'
+      - DRONE_SECRET_PLUGIN_TOKEN: ${DRONE_VAULT_RUNNERS_SECRET}
+      # - DRONE_SECRET_PLUGIN_TOKEN: 'bea26a2221fd8090ea38720fc445eca6'
+    networks:
+      - drone_net
+    ports:
+      - "0.0.0.0:9300:3000"
+    volumes:
+      # - $PWD/postgres:/var/lib/postgresql/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - drone_server
+      - drone_vault
+
+  drone_vault:
+    image: drone/vault
+    restart: always
+    container_name: drone_vault
+    environment:
+      # - DRONE_RPC_PROTO=https
+      # - DRONE_RPC_HOST=${DRONE_HOSTNAME}
+      # - DRONE_RPC_SECRET=${DRONE_RPC_SECRET}
+      # - DRONE_RUNNER_CAPACITY=5
+      # - DRONE_RUNNER_NAME=${DRONE_HOSTNAME}
+      # --> For the time being, I set [DRONE_SECRET] value to the value of [DRONE_RPC_SECRET]
+      - DRONE_DEBUG: true
+      # -- [openssl rand -hex 16] to generate a fixed value of DRONE_SECRET different than the value of [DRONE_RPC_SECRET]
+      - DRONE_SECRET: ${DRONE_VAULT_RUNNERS_SECRET}
+      # - DRONE_SECRET: 'bea26a2221fd8090ea38720fc445eca6'
+      # - VAULT_ADDR: ${VAULT_ADDR}
+      - VAULT_ADDR: 'http://vault.pok-us.io:8200'
+      # - VAULT_ADDR: 'http://vault.pok-us.io:6200'
+      - VAULT_TOKEN: '<value ofsecret vault token to fetch secrets from vault>'
+    networks:
+      - drone_net:
+    networks:
+      drone_net:
+        aliases:
+          - drone-vault
+          - drone-vault.pok-us.io
+    ports:
+      - "0.0.0.0:4300:3000"
+
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- HashiCorp VAULT
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # https://www.misterpki.com/vault-docker/
+  vault-server:
+    image: vault:latest
+    ports:
+      - "0.0.0.0:6200:8200"
+    environment:
+      VAULT_ADDR: "http://vault.pok-us.io:8200"
+      # VAULT_ADDR: "http://0.0.0.0:8200"
+      # VAULT_ADDR: "http://vault.pok-us.io:6200"
+      VAULT_DEV_ROOT_TOKEN_ID: 'vault.dev.root.token.id'
+    cap_add:
+      - IPC_LOCK
+    networks:
+      drone_net:
+        aliases:
+          - vault-server
+          - vault.pok-us.io
+      gitea_net:
+        aliases:
+          - vault-server
+          - vault.pok-us.io
+      vault-network:
+        ipv4_address: 172.21.0.10
+        aliases:
+          - vault-server
+          - vault.pok-us.io
+
+  vault-client:
+    image: pokusio/vault-client:latest
+    build:
+      context: vault/oci/
+      dockerfile: pokus.Dockerfile
+    environment:
+      VAULT_ADDR: "http://vault.pok-us.io:8200"
+      # VAULT_ADDR: "http://vault.pok-us.io:6200"
+      # VAULT_ADDR: "http://vault-server:8200"
+    volumes:
+      # --- #
+      # export GITEA_SHARED_SECRETS_HOME="/pokus/.shared.secrets"
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/gitea/user.name
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/gitea/user.password
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/gitea/api.token
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_id
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_secret
+      # --- #
+      - gitea_pokus_secrets:/pokus/.shared.secrets:ro
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.20
+        aliases:
+          - vault-client

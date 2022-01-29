@@ -12,9 +12,9 @@ public:
       envLabel: shields-production
 
   ssl:
-    isSecure: false
-    # isSecure: true
-
+    isSecure: true
+    key: '/usr/src/certs/pokus.key'
+    cert: '/usr/src/certs/pokus.crt'
   cors:
     allowedOrigin: ['http://*.pok-us.io', 'http://*.pokus.io', 'http://*.pokus-shields.io', 'http://*.pok-us-shields.io', 'http://192.168.168.6']
     # allowedOrigin: ['http://shields.io', 'https://shields.io']

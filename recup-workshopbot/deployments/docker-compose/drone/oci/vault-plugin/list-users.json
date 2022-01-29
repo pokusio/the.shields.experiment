@@ -1,0 +1,37 @@
+{
+  "users": [
+    {
+      "_id": "gedvqvsJQvxdBpnwY",
+      "name": "Administrator",
+      "username": "pokus",
+      "status": "offline",
+      "active": true,
+      "emails": [
+        {
+          "address": "pokus-chatops@pok-us.io",
+          "verified": false
+        }
+      ],
+      "roles": [
+        "admin"
+      ],
+      "nameInsensitive": "administrator"
+    },
+    {
+      "_id": "rocket.cat",
+      "name": "Rocket.Cat",
+      "username": "rocket.cat",
+      "status": "online",
+      "active": true,
+      "roles": [
+        "bot"
+      ],
+      "avatarETag": null,
+      "nameInsensitive": "rocket.cat"
+    }
+  ],
+  "count": 2,
+  "offset": 0,
+  "total": 2,
+  "success": true
+}

@@ -1,0 +1,45 @@
+{
+local_certs
+}
+
+jitsi.pok-us.io {
+	# reverse_proxy https://drone_server:443
+	reverse_proxy http://jitsi_web_service:80
+
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+}

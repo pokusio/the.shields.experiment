@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
+  # -- Badge Server
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
+  shields_service:
+    container_name: shields_badges
+    # image: quay.io/gravitee-lab/pull-request-bot:${DOCKER_TAG} stable-latest
+    image: docker.io/shieldsio/shields:$SHIELDS_VERSION
+    environment:
+      - PORT=$SHIELDS_PORT
+      # RASTER_SERVER : https://raster.pok-us.io
+      - RASTER_SERVER=http://${DOCKHOST_IP_ADDR}:5079/
+    # env_file:
+      # - .compose.env # atually no, same [.env] file ... ?
+    env_file:
+      - .compose.env
+    ports:
+      - 0.0.0.0:6080:$SHIELDS_PORT
+    volumes:
+      - $PWD/config/pokus.yml:/usr/src/app/config/local.yml
+    # entrypoint: /bin/sh
+    # stdin_open: true
+    # tty: true
+    # volumes:
+      # - $PWD/shields/data:/path/to/folder/in/container
+
+  # -------------
+  # For PNG images in shields.io service (extremely beautiful badges :*)
+  raster_service:
+    container_name: raster_service
+    image: $POKUS_OCI_REGISTRY/pokusio/shieldsio-squint:$SHIELDS_VERSION
+    build:
+      context: oci/squint
+      args:
+        # + ...
+        - CARGO_BUILD_MODE=release
+    environment:
+      - PORT=$SHIELDS_PORT
+    env_file:
+      - .compose.env
+    ports:
+      - 0.0.0.0:5079:$SHIELDS_PORT
+    # volumes:
+      # - $PWD/shields/data:/path/to/folder/in/container

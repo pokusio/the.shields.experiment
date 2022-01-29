@@ -1,0 +1,32 @@
+{
+	email jean.baptiste.lasselle@gmail.com
+	acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+gitea.pok-us.io:443 {
+	reverse_proxy gitea_server:3000 {
+		header_up Host gitea.pok-us.io
+		header_up X-Forwarded-Host 443
+	}
+}
+gitea.pok-us.io:80 {
+	reverse_proxy gitea_server:3000 {
+		header_up Host gitea.pok-us.io
+		header_up X-Forwarded-Host 443
+	}
+}
+
+
+drone.pok-us.io:443 {
+	reverse_proxy drone_server:3000 {
+		header_up Host drone.pok-us.io
+		header_up X-Forwarded-Host 443
+	}
+}
+
+drone.pok-us.io:80 {
+	reverse_proxy drone_server:3000 {
+		header_up Host drone.pok-us.io
+		header_up X-Forwarded-Host 443
+	}
+}

@@ -1,0 +1,33 @@
+{
+local_certs
+# Specifies a PEM file that contains a trusted root certificate for ACME CA endpoints
+# acme_ca_root = /pokus/tls/rootca/ca-cert.pem
+}
+gitea.pok-us.io:443 {
+  # mkdir -p /pokus/tls/gitea.pok-us.io/  && cd /pokus/tls/gitea.pok-us.io/ && openssl req -x509 -newkey rsa:4096 -days 365 -keyout ca-key.pem -out ca-cert.pem
+	# tls /pokus/tls/gitea.pok-us.io/cert.pem /pokus/tls/gitea.pok-us.io/key.pem
+	reverse_proxy http://gitea_server:3000 {
+		# header_up Host gitea.pok-us.io
+		# header_up X-Forwarded-Host 443
+		# header_up X-Forwarded-Host 3000
+		# https://caddy.community/t/caddy-in-docker-container-does-not-trust-its-own-root-ca-certificate-automatically/13671
+		transport http {
+					 # BUT If I modify the Frontend Caddyfile and point to its own Root CA certificate explicitly, then it works:
+					 # tls_trusted_ca_certs /pokus/tls/rootca/ca-cert.pem
+					 tls_trusted_ca_certs /data/caddy/pki/authorities/local/root.crt
+		}
+	}
+}
+gitea.pok-us.io:80 {
+	reverse_proxy gitea_server:3000 {
+	}
+}
+
+drone.pok-us.io {
+	# mkdir -p /pokus/tls/drone.pok-us.io/  && cd /pokus/tls/drone.pok-us.io/ && openssl req -x509 -newkey rsa:4096 -days 365 -keyout ca-key.pem -out ca-cert.pem
+	# tls /pokus/tls/drone.pok-us.io/cert.pem /pokus/tls/drone.pok-us.io/key.pem
+	reverse_proxy drone_server:3000 {
+		header_up Host drone.pok-us.io
+		header_up X-Forwarded-Host 443
+	}
+}

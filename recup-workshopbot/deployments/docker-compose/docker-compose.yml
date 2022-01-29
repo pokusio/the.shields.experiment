@@ -1,0 +1,1123 @@
+version: '3.7'
+# version: '3'
+
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- Settings and configurations that are common for
+# -- all minio containers.
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+x-minio-common: &minio-common
+  image: quay.io/minio/minio:RELEASE.2021-10-23T03-28-24Z
+  command: server --console-address ":9001" http://minio{1...4}/data{1...2}
+  expose:
+    - "9000"
+    - "9001"
+  environment:
+    - MINIO_ROOT_USER=pokusminio
+    - MINIO_ROOT_PASSWORD=pokusminio123
+    # - LANG=en_US.UTF-8
+    - LANG=fr_FR.UTF-8
+    - TZ=Europe/Paris
+    - MINIO_REGION_NAME=auvergne
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
+  networks:
+    gitea_net:
+      # aliases:
+        # - minio.pok-us.io
+        # - alias3
+    drone_net:
+      # aliases:
+        # - minio.pok-us.io
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+networks:
+  gitea_net:
+    external: false
+  drone_net:
+    external: false
+  rocketchat_net:
+    external: false
+  vault-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+volumes:
+  gitea_data_folder:
+    driver: local
+  appsmith_stacks_data:
+    driver: local
+  pokus_shared_secrets_folder:
+    driver: local
+  gitea_pokus_secrets:
+    driver: local
+  gitea_postgres_dbdata:
+    driver: local
+  drone_postgres_dbdata:
+    driver: local
+  rocketchat_uploads:
+    driver: local
+  # minio caddy-load-balanced cluster
+  minio_data1_1:
+    driver: local
+  minio_data1_2:
+    driver: local
+  minio_data2_1:
+    driver: local
+  minio_data2_2:
+    driver: local
+  minio_data3_1:
+    driver: local
+  minio_data3_2:
+    driver: local
+  minio_data4_1:
+    driver: local
+  minio_data4_2:
+    driver: local
+  dot_n8n_data_service1:
+    driver: local
+  n8n_postgres_data:
+    driver: local
+  # ---
+  #
+  # ---
+  # caddy_root_ca_data allows sharing caddy pki rootca cert with other containers
+  # sure docker-compose down does not delete the volume.
+  caddy_root_ca_data:
+    driver: local
+  # ---
+  #
+  # ---
+  # Defining the data volume as external makes
+  # sure docker-compose down does not delete the volume.
+  caddy_data:
+    external: true
+  caddy_config:
+
+services:
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- GITEA
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  gitea_server:
+    image: 'pokusio/gitea_server:1.15.4'
+    build:
+      context: gitea/oci/
+      dockerfile: pokus.Dockerfile
+      args:
+        # USER, USER_UID, USER_GID are about the linux user inside container
+        - USER=$POKUS_USER
+        - USER_UID=$POKUS_USER_UID
+        - USER_GID=$POKUS_USER_GID
+        # POKUS_USER* are about the linux user inside container
+        - POKUS_USER=$POKUS_USER
+        - POKUS_USER_UID=$POKUS_USER_UID
+        - POKUS_USER_GID=$POKUS_USER_GID
+        # POKUS_ADMIN_USER will be the first super admin gitea user.
+        - POKUS_ADMIN_USER=$POKUS_ADMIN_USER
+        - POKUS_ADMIN_PASSWORD=$POKUS_ADMIN_PASSWORD
+        # POKUS_GITEA_HTTP_PORT will set Gitea HTTP port number
+        - POKUS_GITEA_HTTP_PORT=$POKUS_GITEA_HTTP_PORT
+        - POKUS_GITEA_SERVER_HTTP_PROTO=$POKUS_GITEA_SERVER_HTTP_PROTO
+        - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+        - GITEA_CUSTOM=/donnees/gitea
+    container_name: gitea_server
+    environment:
+      # https://docs.gitea.io/en-us/install-with-docker/#configure-the-user-inside-gitea-using-environment-variables
+      # - GITEA_USER=git
+      # USER: $GITEA_USER
+      # USER, USER_UID, USER_GID are about the linux user inside container
+      - USER=$POKUS_USER
+      - USER_UID=$POKUS_USER_UID
+      - USER_GID=$POKUS_USER_GID
+      # POKUS_USER_* are about the linux user inside container
+      - POKUS_USER=$POKUS_USER
+      - POKUS_USER_UID=$POKUS_USER_UID
+      - POKUS_USER_GID=$POKUS_USER_GID
+      # POKUS_ADMIN_USER will be the first super admin gitea user.
+      - POKUS_ADMIN_USER=$POKUS_ADMIN_USER
+      - POKUS_ADMIN_PASSWORD=$POKUS_ADMIN_PASSWORD
+      # POKUS_GITEA_HTTP_PORT will set Gitea HTTP port number
+      - POKUS_GITEA_HTTP_PORT=$POKUS_GITEA_HTTP_PORT
+      - POKUS_GITEA_SERVER_HTTP_PROTO=$POKUS_GITEA_SERVER_HTTP_PROTO
+      # --- #
+      - DOMAIN=gitea.pok-us.io
+      - SSH_DOMAIN=gitea.pok-us.io
+      - SSH_PORT=$POKUS_GITEA_SSH_PORT
+      - SSH_LISTEN_PORT=22
+      - ROOT_URL=https://gitea.pok-us.io
+      # --- #
+      - GITEA__database__DB_TYPE='postgres'
+      - GITEA__database__HOST='gitea_postgres_db.pok-us.io:5432'
+      - GITEA__database__NAME='gitea'
+      - GITEA__database__USER='gitea'
+      - GITEA__database__PASSWD='gitea'
+      # - GITEA__security__INSTALL_LOCK=false
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__security__SECRET_KEY=$GITEA_SECURITY_SECRET_KEY
+      # ---------------------------------------------
+      # -- Sets on which network interface the ssh server will bind, and with which hostname the gitea server itself will run
+      # - GITEA__server__SSH_DOMAIN="0.0.0.0"
+      - GITEA__server__SSH_DOMAIN=gitea.pok-us.io
+      - GITEA__server__DOMAIN=gitea.pok-us.io
+      - GITEA__repository_local__LOCAL_COPY_PATH="/donnees/gitea/tmp/local-repo"
+      - GITEA__repository_upload__TEMP_PATH="/donnees/gitea/uploads"
+      - GITEA__server__APP_DATA_PATH="/donnees/gitea"
+      - GITEA__database__PATH="/donnees/gitea/gitea.db"
+      - GITEA__indexer__ISSUE_INDEXER_PATH="/donnees/gitea/indexers/issues.bleve"
+      - GITEA__session__PROVIDER_CONFIG="/donnees/gitea/sessions"
+      - GITEA__picture__AVATAR_UPLOAD_PATH="/donnees/gitea/avatars"
+      - GITEA__picture__REPOSITORY_AVATAR_UPLOAD_PATH="/donnees/gitea/repo-avatars"
+      - GITEA__attachment__PATH="/donnees/gitea/attachments"
+      - GITEA__log__ROOT_PATH="/donnees/gitea/log"
+      # ---------------------------------------------
+      # --- Unfortunately the matrix gitea theme is only compatible with gitea 1.12.x , and I am 1.15.x ...
+      # - GITEA__ui__THEMES="gitea,arc-green,matrix"
+      # - GITEA__ui__DEFAULT_THEME="matrix"
+      # ---------------------------------------------
+      # [server]
+      # APP_DATA_PATH    = /donnees/gitea
+      # DOMAIN           = localhost
+      # SSH_DOMAIN       = localhost
+      # ---------------------------------------------
+      # [repository.local]
+      # LOCAL_COPY_PATH = /donnees/gitea/tmp/local-repo
+      #
+      # [repository.upload]
+      # TEMP_PATH = /donnees/gitea/uploads
+      #
+      # [server]
+      # APP_DATA_PATH    = /donnees/gitea
+      #
+      # [database]
+      # PATH    = /donnees/gitea/gitea.db
+      #
+      # [indexer]
+      # ISSUE_INDEXER_PATH = /donnees/gitea/indexers/issues.bleve
+      #
+      # [session]
+      # PROVIDER_CONFIG = /donnees/gitea/sessions
+      #
+      # [picture]
+      # AVATAR_UPLOAD_PATH            = /donnees/gitea/avatars
+      # REPOSITORY_AVATAR_UPLOAD_PATH = /donnees/gitea/repo-avatars
+      #
+      # [attachment]
+      # PATH = /donnees/gitea/attachments
+      #
+      # [log]
+      # ROOT_PATH = /donnees/gitea/log
+      #
+      # [ui]
+      # THEMES = gitea,arc-green,matrix
+      # DEFAULT_THEME = matrix
+      # ------------------------------------------------------------------
+      # - ADMIN_USER = POKUS
+      # - ADMIN_PASSWORD = POKUS
+      - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+      - GITEA_CUSTOM=/donnees/gitea
+      # ROOT CA OF CADDY :
+      - POKUS_GITEA_REV_PROXY_ROOT_CA_CERT=/pokus/caddy/pki/authorities/local/root.crt
+    restart: always
+    # networks:
+      # - gitea_net
+    networks:
+      gitea_net:
+        aliases:
+          - git.pok-us.io
+      drone_net:
+        aliases:
+          - git.pok-us.io
+    extra_hosts:
+      - "drone.pok-us.io:$DOCK_HOST_IP_ADDR"
+      # - "drone.pok-us.io:$DOCK_HOST_IP_ADDR"
+    volumes:
+      # - $PWD/donnees/gitea:/data
+      # - gitea_data_folder:/data
+      - pokus_shared_secrets_folder:/pokus/.shared.secrets:rw
+      # ---
+      # Caddy_root_ca_data volume allwos trusting the Caddy local PKI Root CA in the gitea container, at start up time
+      # ---
+      # see [RUN mkdir -p /pokus/caddy/pki/authorities/local] in
+      # the Dockerfile of the gitea container
+      - caddy_root_ca_data:/pokus/caddy/pki/authorities/local
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      # Otherwise the SSH authentication cannot work inside the container.
+      # So to manage the SSH identity of the gitea server, we geenrate an RSA SSH Key apir with default file names, inside the $PWD/gitea/.ssh/ folder
+      # Also, we could retrieve the SSH Key Pair from HashiCorp Vault
+      # - $PWD/data/gitea/.ssh:/data/git/.ssh
+      - $PWD/gitea/donnees/.ssh/authorized_keys:/donnees/gitea/.ssh/authorized_keys:rw
+      - $PWD/gitea/donnees/.ssh/id_rsa:/donnees/gitea/.ssh/id_rsa:ro
+      - $PWD/gitea/donnees/.ssh/id_rsa.pub:/donnees/gitea/.ssh/id_rsa.pub:ro
+      - $PWD/gitea/donnees/.ssh/known_hosts:/donnees/gitea/.ssh/known_hosts:rw
+      # - $PWD/donnees/gitea/conf/app.ini:/data/gitea/conf/app.ini
+      # # # - $PWD/donnees/gitea/conf/donnees.app.ini:/donnees/gitea/conf/app.ini
+      # # # - $PWD/gitea/app/gitea:/app/gitea/gitea
+      # --- #
+      # export GITEA_SHARED_SECRETS_HOME="/pokus/.shared.secrets"
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/gitea/api.token
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_id
+      # + ${GITEA_SHARED_SECRETS_HOME}/pokus.secrets/dev/drone/gitea.client_secret
+      # --- #
+    ports:
+      - "0.0.0.0:${POKUS_GITEA_HTTP_PORT}:3000"
+      - "0.0.0.0:${POKUS_GITEA_SSH_PORT}:22"
+      # - "0.0.0.0:7300:3000"
+      # - "0.0.0.0:2224:22"
+    depends_on:
+      - gitea_postgres_db
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- POSTGRES_DBs
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  gitea_postgres_db:
+    image: postgres:13
+    restart: always
+    container_name: gitea_postgres_db
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    networks:
+      gitea_net:
+        aliases:
+          - gitea_postgres_db.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - gitea_postgres_db.pok-us.io
+    volumes:
+      # - ./postgres:/var/lib/postgresql/data
+      - gitea_postgres_dbdata:/var/lib/postgresql/data
+
+  drone_postgres_db:
+    image: postgres:13
+    restart: always
+    container_name: drone_postgres_db
+    environment:
+      - POSTGRES_USER=pokusdrone
+      - POSTGRES_PASSWORD=pokusdrone
+      - POSTGRES_DB=dronedb
+    networks:
+      drone_net:
+        aliases:
+          - drone_postgres_db.pok-us.io
+    volumes:
+      # - ./postgres:/var/lib/postgresql/data
+      - drone_postgres_dbdata:/var/lib/postgresql/data
+
+  # --------------- CERTIFICATES MANAGEMENT --------------- #
+  # https://www.rosehosting.com/blog/how-to-install-gitea-with-nginx-and-free-lets-encrypt-ssl-on-ubuntu-20-04/
+  # https://docs.gitea.io/en-us/https-setup/
+  # https://hub.docker.com/_/caddy
+  # --------------- CERTIFICATES MANAGEMENT --------------- #
+  #  Caddy automatically manage certificates acting as its own internal PKI, see Caddyfile [local_certs] directive
+  # ---
+  # docker run -d -p 80:80 -p 443:443 \
+  #     -v /site:/srv \
+  #     -v caddy_data:/data \
+  #     -v caddy_config:/config \
+  #     caddy caddy file-server --domain example.com
+  # ---
+  pokus_reverse_proxy:
+    # command: /usr/bin/caddy file-server --domain caddy.pok-us.io
+    image: pokusio/caddy:caddy-$POKUS_CADDY_VERSION
+    restart: unless-stopped
+    build:
+      context: caddy/oci/
+      dockerfile: pokus.Dockerfile
+      args:
+        - POKUS_CADDY_VERSION=$POKUS_CADDY_VERSION
+    container_name: pokus_reverse_proxy
+    environment:
+      # - POKUS_CADDYFILE=Caddyfile
+      - POKUS_CADDYFILE=Caddyfile.lb
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9001:9001"
+      - "9000:9000"
+    volumes:
+      # - $PWD/caddy/config.server/Caddyfile:/pokus/config/Caddyfile
+      # - $PWD/site:/srv
+      # - caddy_data:/data
+      - caddy_root_ca_data:/data/caddy/pki/authorities/local:rw
+      - caddy_config:/config
+      # - $PWD/pokus/tls/rootca/ca-cert.pem:/data/caddy/pki/authorities/local/root.crt
+      - $PWD/pokus/tls/rootca/ca-cert.pem:/pokus/tls/rootca/ca-cert.pem
+      - $PWD/pokus/tls/rootca/ca-key.pem:/pokus/tls/rootca/ca-key.pem
+    networks:
+      gitea_net:
+        aliases:
+          - caddy.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - caddy.pok-us.io
+
+
+  # ---
+  # certbot:
+    # image: certbot/certbot
+    # container_name: certbot
+    # volumes:
+      # - certbot-etc:/etc/letsencrypt
+      # - certbot-var:/var/lib/letsencrypt
+      # - cerbot-gitea:/var/www/html
+    # depends_on:
+      # - webserver
+    # command: certonly --webroot --webroot-path=/var/www/html --email sammy@example.com --agree-tos --no-eff-email --staging -d example.com  -d www.example.com
+
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -- ROCKET CHAT
+  # --- started off from : https://docs.rocket.chat/quick-start/installing-and-updating/docker-containers/docker-compose
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:latest
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          node main.js &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 secs...\";
+          sleep 5;
+        done; (exit $$s)"
+    restart: unless-stopped
+    volumes:
+      - rocketchat_uploads:/app/uploads
+      # - ./uploads:/app/uploads
+    environment:
+      # - PORT=3000
+      # - ROOT_URL=http://localhost:3000
+      # ROOT URL SHOULD BE SET TO THE ADDRESS WE WILL USE THROUGH THE REVERSE PROXY, NOT AS IF IT WS INTERNAL DOCKER NETWORKING
+      - ROOT_URL=https://chat.pok-us.io/
+      # MONGO URLs ARE ON DOCKER INTERNAL NETWORK UNLIKE ROOT URL
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
+#       - MAIL_URL=smtp://smtp.email
+#       - HTTP_PROXY=http://proxy.domain.com
+#       - HTTPS_PROXY=http://proxy.domain.com
+      # --- # --- # --- # --- # --- # --- # --- # --- #
+      # --- # --- # --- # --- # --- # --- # --- # --- #
+      # - create first admin user
+      # refs:
+      #     off1 : https://docs.rocket.chat/quick-start/creating-the-first-administrator
+      # --- # --- # --- # --- # --- # --- # --- # --- #
+      # --- # --- # --- # --- # --- # --- # --- # --- #
+      - ADMIN_USERNAME=pokus
+      - ADMIN_PASS=pokus
+      - ADMIN_EMAIL=pokus-chatops@pok-us.io
+    depends_on:
+      - mongo
+    ports:
+      - 3003:3000
+    networks:
+      gitea_net:
+        aliases:
+          - chat.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - chat.pok-us.io
+      rocketchat_net:
+        aliases:
+          - chat.pok-us.io
+    extra_hosts:
+      - "jitsi_jvb.pok-us.io:$DOCK_HOST_IP_ADDR"
+    labels:
+      - "traefik.backend=rocketchat"
+      - "traefik.frontend.rule=Host: your.domain.tld"
+  # ---
+  # [rocketchat_init] :
+  # - creates a non admin user for the hubot to authenticate to rocketchat
+  # ---
+  rocketchat_init:
+    image: 'pokusio/rocketchat_init:0.0.1'
+    build:
+      context: rocketchat/oci/initializer/
+      dockerfile: pokus.Dockerfile
+      args:
+        - ALPINE_CONTAINER_TAG=3.13.6
+    container_name: rocketchat_init
+    restart: unless-stopped
+    environment:
+      # ADMIN USER CREDS TO USE TO CREATE THE BOT USER
+      - POKUS_CHAT_ADMIN_USER_NAME=pokus
+      - POKUS_CHAT_ADMIN_USER_PWD=pokus
+      # BOT USER TOCREATE IN ROCKETCHAT
+      - POKUS_CHAT_BOT_USER_NAME=pokusbot
+      - POKUS_CHAT_BOT_USER_ALIAS=pokusbot
+      - POKUS_CHAT_BOT_USER_EMAIL=pokusbot@pok-us.io
+      - POKUS_CHAT_BOT_USER_PWD=pokusbot
+      # ROCKETCHAT API SERVER INFOS
+      - POKUS_CHAT_SERVER_HOSTNAME=rocketchat
+      - POKUS_CHAT_SERVER_PORT=3000
+      - POKUS_CHAT_SERVER_HTTP_PROTO=http
+    networks:
+      gitea_net:
+        aliases:
+          - pokuschatinit.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - pokuschatinit.pok-us.io
+  mongo:
+    image: mongo:4.0
+    restart: unless-stopped
+    volumes:
+     - ./data/db:/data/db
+     #- ./data/dump:/dump
+    command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
+    labels:
+      - "traefik.enable=false"
+    networks:
+      gitea_net:
+        aliases:
+          - mongo.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - mongo.pok-us.io
+  # this container's job is just run the command to initialize the replica set.
+  # it will run the command and remove himself (it will not stay running)
+  mongo-init-replica:
+    image: mongo:4.0
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          mongo mongo/rocketchat --eval \"
+            rs.initiate({
+              _id: 'rs0',
+              members: [ { _id: 0, host: 'localhost:27017' } ]})\" &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 secs...\";
+          sleep 5;
+        done; (exit $$s)"
+    depends_on:
+      - mongo
+    networks:
+      gitea_net:
+        aliases:
+          - mongo-init.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - mongo-init.pok-us.io
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -->> POKUS DOC. REF. : https://hub.docker.com/r/rocketchat/hubot-rocketchat
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+  # hubot, the popular chatbot (add the bot user first and change the password before starting this image)
+  hubot:
+    # image: rocketchat/hubot-rocketchat:latest
+    # --- impossible to build from source the rockchat hubot adapter for the moment: i started that because i needed additional
+    image: 'pokusio/hubot-rocketchat:0.0.1'
+    build:
+      context: hubot/oci/
+      dockerfile: pokus.Dockerfile
+    # --- as is, go to any chat room or channel, then type 'pokusbot pug me and you will see the bot responding you'
+    # image: 'pokusio/hubot-rocketchat:0.0.1'
+    # build:
+      # context: hubot/oci/
+      # dockerfile: pokus.build.from.src.Dockerfile
+      args:
+        - POKUS_ADDITIONAL_LX_PACKAGES=git git-flow curl wget tree
+        - POKUS_ADDITIONAL_NPM_PACKAGES=shelljs node-vault fs semver
+        # - COFFESCRIPT_VERSION=1.12.6
+        # # - COFFESCRIPT_VERSION=2.3.2
+        # - YO_VERSION=2.0.0
+        # # - YO_VERSION=2.0.5
+        # - YO_GENERATOR_VERSION=1.0.0
+        # # - YO_GENERATOR_VERSION=1.1.0
+    restart: unless-stopped
+    environment:
+      - ROCKETCHAT_URL=http://rocketchat:3000
+      - ROCKETCHAT_ROOM=GENERAL
+      - ROCKETCHAT_USER=pokusbot
+      - ROCKETCHAT_PASSWORD=pokusbot
+      - ROCKETCHAT_AUTH=password
+      - BOT_NAME=pokusbot
+      - HUBOT_NAME=pokusbot
+      - HUBOT_LOG_LEVEL=debug
+      - RESPOND_TO_DM=true
+      # EXTRA_PACKAGES does not work (no npm install happens because of it all)
+      # - EXTRA_PACKAGES=shelljs
+  # you can add more scripts as you'd like here, they need to be installable by npm
+      - EXTERNAL_SCRIPTS=hubot-pugme,hubot-help,hubot-seen,hubot-links,hubot-diagnostics
+      - POKUS_ADDITIONAL_NPM_PACKAGES=shelljs
+      - POKUS_GIT_SSH_CMD=ssh -vvvi /home/hubot/pokus/secrets/.ssh/id_rsa
+      - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+      # --- To get the Vault token created for the hubot by vault client
+      - POKUS_HUBOT_VAULT_TOKEN_SECRET_PATH=/pokus/.shared.secrets/dev/hubot/vault.token
+      # The value of "VAULT_TOKEN" will be found in the file : [${GITEA_SHARED_SECRETS_HOME}/dev/drone-runner/vault.token]
+      # - VAULT_TOKEN=vault-plaintext-root-token
+      - VAULT_TOKEN=inyourdreams;)
+      # - VAULT_ADDR=http://vault_server:8200
+      - VAULT_ADDR=http://vault_server.pok-us.io:8200
+      - HUBOT_STARTUP_ROOM=general
+      - HUBOT_STARTUP_MESSAGE='Hello World! This is Pokus!'
+      - GIT_USER_GPG_SIGNING_KEY=PDSDO545KUSBO5874TGSD
+      - GIT_USER_NAME=pokusbot
+      - GIT_USER_EMAIL=pokusbot@pok-us.io
+    depends_on:
+      - rocketchat
+    labels:
+      - "traefik.enable=false"
+    volumes:
+      - ./hubot/scripts:/home/hubot/scripts
+      # - ./scripts:/home/hubot/scripts
+      # - $PWD/hubot/scripts/pokus.coffee:/home/hubot/scripts/pokus.coffee
+      # - $PWD/hubot/npm/package-lock.json:/home/hubot/package-lock.json
+      # - $PWD/hubot/npm/package.json:/home/hubot/package.json
+      - $PWD/hubot/secrets/.ssh/id_rsa.pub:/pokus/secrets/.ssh/id_rsa.pub:ro
+      - $PWD/hubot/secrets/.ssh/id_rsa:/pokus/secrets/.ssh/id_rsa:ro
+      - pokus_shared_secrets_folder:/pokus/.shared.secrets:ro
+    ports:
+      - 3001:8080
+    networks:
+      gitea_net:
+        aliases:
+          - pokusbot.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - pokusbot.pok-us.io
+
+
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # -->> DRONE DOC. REF. :
+  # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+  # Non Official Ref.: https://blog.ruanbekker.com/blog/2021/03/09/cicd-with-droneci-and-gitea-using-docker-compose/
+
+  drone_server:
+    # image: drone/drone:2.4.0
+    image: 'pokusio/drone_server:0.0.1-drone-2.4.0'
+    build:
+      context: drone/oci/server/
+      dockerfile: pokus.Dockerfile
+      args:
+        - DRONE_CONTAINER_TAG=2.4.0
+        - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+    restart: always
+    container_name: drone_server
+    environment:
+      - DRONE_GIT_ALWAYS_AUTH=false
+      # ---
+      # DRONE_RPC_SECRET value can be generated with :
+      #     <code>openssl rand -hex 16</code>
+      #
+      # - DRONE_RPC_SECRET=super-duper-secret
+      - DRONE_RPC_SECRET=$DRONE_RPC_SECRET
+      - DRONE_RUNNER_CAPACITY=5
+      - DRONE_SERVER_PROTO=https
+      # - DRONE_SERVER_PROTO=http
+      # - So the Gitea OAuth App Redirect URI will
+      #   be "https://drone.pok-us.io/login" (and not
+      #   "http://drone.pok-us.io:9980/login"), because
+      #   from the outside world, and used in external
+      #   docker host network for the OAuth authentication flow
+      #   ----
+      # - DRONE_SERVER_HOST=drone.pok-us.io:9980
+      - DRONE_SERVER_HOST=drone.pok-us.io
+      # - DRONE_SERVER_PORT=80
+      - DRONE_TLS_AUTOCERT=false
+      - DRONE_NETWORK=drone_net
+      - DRONE_RUNNER_NETWORKS=drone_net
+      - DRONE_LOGS_DEBUG=true
+      - DRONE_LOGS_TEXT=true
+      - DRONE_LOGS_PRETTY=true
+      - DRONE_LOGS_COLOR=true
+      # DRONE_AGENTS_ENABLED as true if
+      # you want to run server and agent in the same container.
+      # see https://github.com/go-training/drone-tutorial/issues/3#issuecomment-590711813
+      - DRONE_AGENTS_ENABLED=false
+      # --- DRONE_OPEN : Will Drone be opened to registration ? defaults to true
+      # - DRONE_OPEN=true
+      # --- SSL Skip verify all : github gitea, gitlab
+      # ssl
+      - DRONE_GITEA_SKIP_VERIFY=true
+      - DRONE_GITHUB_SKIP_VERIFY=true
+      - DRONE_GOGS_SKIP_VERIFY=true
+      - DRONE_VALIDATE_PLUGIN_SKIP_VERIFY=true
+      - DRONE_WEBHOOK_SKIP_VERIFY=true
+      # - DRONE_HTTP_SSL_REDIRECT=true
+      # cron
+      - DRONE_CRON_INTERVAL=1h
+      # ---
+      # DRONE_COOKIE_SECRET value can be generated with :
+      #     <code>openssl rand -hex 16</code>
+      # Just like DRONE_RPC_SECRET
+      # ---
+      #
+      - DRONE_COOKIE_SECRET=${DRONE_COOKIE_SECRET}
+      - DRONE_STATUS_NAME=pokus/drone
+      # --- DRONE_USER_CREATE=username:${GITEA_ADMIN_USER},machine:false,admin:true,token:${DRONE_RPC_SECRET}
+      # https://docs.drone.io/server/reference/drone-user-create/
+      # -
+      # Optional user account that should be created on startup. This should be used to seed the system with an administrative account. It can be a real account (i.e. a real GitHub user) or it can be a machine account.
+      # -
+      # Providing a token is required for machine accounts, and must be 32 bytes. You can generate a random 32-byte token with the following command:
+      #     <code>openssl rand -hex 16</code>
+      # -
+      # In our case : the first user created in gitea named "pokus", will be used by drone, to create the frist super admin user in Drone Server
+      # -
+      #         - POKUS_ADMIN_USER=pokus
+      #         - POKUS_ADMIN_PASSWORD=pokus5432
+      - DRONE_USER_CREATE=$DRONE_USER_CREATE
+      # When open to registration, this filter will authorize only from those Gitea Users (or Github / Gitlab users)
+      - DRONE_USER_FILTER=jbl,gianni,dom,sophie,leo,pierrot,pasjeanclaude,pokus,pokusjb
+      # --- Drone <-> Gitea
+      # --- --- Even DRONE_GITEA_SERVER is used to determine to Gitea Enpoint to Hit from Drone, to Gitea, during [OAuth2] authentication flow.
+      - DRONE_GITEA_SERVER=https://gitea.pok-us.io/
+      # -
+      #
+      # Drone 's [start.sh] Container entrypoint will check in the shared volume if the 2 [ccc] and [vvv] files are created, and will use their content to set both [DRONE_GITEA_CLIENT_ID] and [DRONE_GITEA_CLIENT_SECRET]
+      #
+      # -
+      - DRONE_GITEA_CLIENT_ID=inyourdreams;)
+      - DRONE_GITEA_CLIENT_SECRET=inyourdreams;)
+      - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+      - POKUS_GITEA_CLIENT_ID_PATH=/pokus/.shared.secrets/dev/drone/gitea.client_id
+      - POKUS_GITEA_CLIENT_SECRET_PATH=/pokus/.shared.secrets/dev/drone/gitea.client_secret
+      # --- Postgres Database instead of SQlite3
+      - DRONE_DATABASE_DRIVER=postgres
+      - DRONE_DATABASE_DATASOURCE=postgres://pokusdrone:pokusdrone@drone_postgres_db:5432/dronedb?sslmode=disable
+      - DRONE_DATABASE_SECRET=$DRONE_DATABASE_SECRET
+      # --- Drone Minio Database
+      - DRONE_S3_ENDPOINT=http://minio-s3-server:9000
+      - DRONE_S3_PATH_STYLE=true
+      - DRONE_S3_SKIP_VERIFY=true
+      - DRONE_S3_PREFIX=logs
+      - AWS_REGION=auvergne
+      - AWS_ACCESS_KEY_ID=pokusminio
+      - AWS_SECRET_ACCESS_KEY=pokusminio123
+      - DRONE_S3_BUCKET=drone
+      # ---
+    networks:
+      gitea_net:
+        aliases:
+          - dronie.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - dronie.pok-us.io
+    extra_hosts:
+      - "gitea.pok-us.io:$DOCK_HOST_IP_ADDR"
+      # - "gitea.pok-us.io:$DOCK_HOST_IP_ADDR"
+    ports:
+      - "0.0.0.0:9980:80"
+      - "0.0.0.0:9443:443"
+    volumes:
+      # -- Drone Data is persisted either is postgres or S3 bucker in minio
+      # - $PWD/drone/data:/data
+      - pokus_shared_secrets_folder:/pokus/.shared.secrets:rw
+      # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+    depends_on:
+      - drone_postgres_db
+      - gitea_server
+
+  # --- # --- NEW ONE
+  # --- # --- NEW ONE DRONE SERVER
+  # --- # --- NEW ONE
+
+#   drone_server:
+#     image: drone/drone:2.4.0
+#     # image: 'pokusio/drone_server:0.0.1-drone-2.4.0'
+#     restart: always
+#     container_name: drone_server
+#     environment:
+#       # --- CHIRURGIE
+#       - DRONE_GIT_ALWAYS_AUTH=false
+#       # ---
+#       # DRONE_RPC_SECRET value can be generated with :
+#       #     <code>openssl rand -hex 16</code>
+#       #
+#       # - DRONE_RPC_SECRET=super-duper-secret
+#       - DRONE_RPC_SECRET=$DRONE_RPC_SECRET
+#       - DRONE_SERVER_PROTO=https
+#       # - DRONE_SERVER_PROTO=http
+#       # - So the Gitea OAuth App Redirect URI will
+#       #   be "https://drone.pok-us.io/login" (and not
+#       #   "http://drone.pok-us.io:9980/login"), because
+#       #   from the outside world, and used in external
+#       #   docker host network for the OAuth authentication flow
+#       #   ----
+#       # - DRONE_SERVER_HOST=drone.pok-us.io:9980
+#       - DRONE_SERVER_HOST=drone.pok-us.io
+#       # - DRONE_SERVER_PORT=80
+#       - DRONE_TLS_AUTOCERT=false
+#       # - DRONE_NETWORK=drone_net
+#       # # - DRONE_RUNNER_NETWORKS=drone_net
+#       - DRONE_LOGS_DEBUG=true
+#       - DRONE_LOGS_TEXT=true
+#       - DRONE_LOGS_PRETTY=true
+#       - DRONE_LOGS_COLOR=true
+#       # DRONE_AGENTS_ENABLED as true if
+#       # you want to run server and agent in the same container.
+#       # see https://github.com/go-training/drone-tutorial/issues/3#issuecomment-590711813
+#       # - DRONE_AGENTS_ENABLED=false
+#       # --- DRONE_OPEN : Will Drone be opened to registration ? defaults to true
+#       # - DRONE_OPEN=true
+#       # --- SSL Skip verify all : github gitea, gitlab
+#       # ssl
+#       # - DRONE_GITEA_SKIP_VERIFY=true
+#       # - DRONE_GITHUB_SKIP_VERIFY=true
+#       # - DRONE_GOGS_SKIP_VERIFY=true
+#       # - DRONE_VALIDATE_PLUGIN_SKIP_VERIFY=true
+#       # - DRONE_WEBHOOK_SKIP_VERIFY=true
+#       # - DRONE_HTTP_SSL_REDIRECT=true
+#       # cron
+#       # - DRONE_CRON_INTERVAL=1h
+#       # ---
+#       # DRONE_COOKIE_SECRET value can be generated with :
+#       #     <code>openssl rand -hex 16</code>
+#       # Just like DRONE_RPC_SECRET
+#       # ---
+#       #
+#       # - DRONE_COOKIE_SECRET=${DRONE_COOKIE_SECRET}
+#       # --- DRONE_USER_CREATE=username:${GITEA_ADMIN_USER},machine:false,admin:true,token:${DRONE_RPC_SECRET}
+#       # https://docs.drone.io/server/reference/drone-user-create/
+#       # -
+#       # Optional user account that should be created on startup. This should be used to seed the system with an administrative account. It can be a real account (i.e. a real GitHub user) or it can be a machine account.
+#       # -
+#       # Providing a token is required for machine accounts, and must be 32 bytes. You can generate a random 32-byte token with the following command:
+#       #     <code>openssl rand -hex 16</code>
+#       # -
+#       # In our case : the first user created in gitea named "pokus", will be used by drone, to create the frist super admin user in Drone Server
+#       # -
+#       #         - POKUS_ADMIN_USER=pokus
+#       #         - POKUS_ADMIN_PASSWORD=pokus5432
+#       - DRONE_USER_CREATE=${DRONE_USER_CREATE}
+#       # --- Drone <-> Gitea
+#       # - DRONE_GITEA_SERVER=http://gitea_server:3000/
+#       - DRONE_GITEA_SERVER=https://gitea.pok-us.io
+#       - DRONE_GITEA_CLIENT_ID=${DRONE_GITEA_CLIENT_ID}
+#       - DRONE_GITEA_CLIENT_SECRET=${DRONE_GITEA_CLIENT_SECRET}
+#       # --- Postgres Database instead of SQlite3
+#       - DRONE_DATABASE_DRIVER=postgres
+#       - DRONE_DATABASE_DATASOURCE=postgres://pokusdrone:pokusdrone@drone_postgres_db:5432/dronedb?sslmode=disable
+#       - DRONE_DATABASE_SECRET=pokusdrone
+#       # --- Drone Minio Database
+#       - DRONE_S3_ENDPOINT=http://minio-s3-server:9000
+#       - DRONE_S3_PATH_STYLE=true
+#       - DRONE_S3_SKIP_VERIFY=true
+#       - DRONE_S3_PREFIX=logs
+#       - AWS_REGION=auvergne
+#       - AWS_ACCESS_KEY_ID=pokusminio
+#       - AWS_SECRET_ACCESS_KEY=pokusminio123
+#       - DRONE_S3_BUCKET=drone
+#       # ---
+#     networks:
+#       gitea_net:
+#         aliases:
+#           - dronie.pok-us.io
+#           # - alias3
+#       drone_net:
+#         aliases:
+#           - dronie.pok-us.io
+#     ports:
+#       - "0.0.0.0:9980:80"
+#       - "0.0.0.0:9443:443"
+#     volumes:
+#       # -- Drone Data is persisted either is postgres or S3 bucker in minio
+#       # - $PWD/drone/data:/data
+#       - pokus_shared_secrets_folder:/pokus/.shared.secrets:rw
+#       # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+#       - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+#     depends_on:
+#       - drone_postgres_db
+#       - gitea_server
+
+  drone_runner:
+    image: drone/drone-runner-docker:1.6.3
+    restart: always
+    container_name: drone_runner
+    environment:
+      - LANG=en_US.UTF-8
+      - DRONE_RUNNER_NETWORKS=drone_net
+      # vault config
+      - DRONE_SECRET_PLUGIN_SKIP_VERIFY=true
+      - DRONE_SECRET_PLUGIN_ENDPOINT=http://drone-vault.pok-us.io:3000
+      # DRONE_SECRET_PLUGIN_TOKEN : must have same value as the DRONE_SECRET in the drone_vault Docker Compose service
+      - DRONE_SECRET=${DRONE_VAULT_RUNNERS_SECRET}
+      # - DRONE_SECRET=provide_drone_vault_token_key_by_jyao
+      # - DRONE_SECRET_PLUGIN_TOKEN='bea26a2221fd8090ea38720fc445eca6'
+      # runner config
+      - DRONE_RPC_SKIP_VERIFY=true
+      - DRONE_RPC_PROTO=http
+      - DRONE_RPC_HOST=drone_server
+      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET}
+      # - DRONE_RPC_SECRET=drone_secret_by_jyao
+      - DRONE_RUNNER_CAPACITY=12
+      - DRONE_RUNNER_NAME=pokus_drone
+        # - DRONE_RUNNER_LABELS=foo:bar,baz:qux,host:${HOSTNAME}
+      - DRONE_UI_USERNAME=pokus
+      - DRONE_UI_PASSWORD=pokus
+      - DRONE_MEMORY_SWAP_LIMIT=500000000
+      # - TZ=Asia/Shanghai
+      - TZ=Europe/Paris
+      # just docker
+      # - DRONE_RUNNER_VOLUMES=/etc/docker/daemon.json:/etc/docker/daemon.json,/tmp/var/lib/docker:/var/lib/docker,/root/.m2:/root/.m2
+      - DRONE_RUNNER_VOLUMES=/etc/docker/daemon.json:/etc/docker/daemon.json,/tmp/var/lib/docker:/var/lib/docker
+      # other CONFIG
+      - DRONE_RPC_DUMP_HTTP=true
+      - DRONE_RPC_DUMP_HTTP_BODY=true
+      - DRONE_TRACE=true
+      - DRONE_DEBUG=true
+    networks:
+      gitea_net:
+        aliases:
+          - drone-runner.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - drone-runner.pok-us.io
+    ports:
+      - "0.0.0.0:9300:3000"
+    volumes:
+      # - $PWD/postgres:/var/lib/postgresql/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+    depends_on:
+      - drone_server
+      - drone_vault
+
+  drone_vault:
+    # image: drone/vault
+    image: pokusio/drone-vault:0.0.1-drone-1.2.0
+    build:
+      context: drone/oci/vault-plugin/
+      dockerfile: pokus.Dockerfile
+      args:
+        - DRONE_VAULT_CONTAINER_TAG=1.2.0
+        - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+    restart: always
+    container_name: drone_vault
+    volumes:
+      - pokus_shared_secrets_folder:/pokus/.shared.secrets:rw
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+    expose:
+      - 3000
+    environment:
+      - LANG=en_US.UTF-8
+      - DRONE_DEBUG=true
+      - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+      # The value of "VAULT_TOKEN" will be found in the file : [POKUS_DRONE_VAULT_TOKEN_SECRET_PATH=${GITEA_SHARED_SECRETS_HOME}/dev/drone-runner/vault.token]
+      - POKUS_DRONE_VAULT_TOKEN_SECRET_PATH=/pokus/.shared.secrets/dev/drone-runner/vault.token
+      # - VAULT_TOKEN=<don't you use the vault root token>
+      - VAULT_TOKEN=inyourdreams;)
+      # - VAULT_ADDR=http://vault_server:8200
+      - VAULT_ADDR=http://vault_server.pok-us.io:8200
+      # -- [openssl rand -hex 16] to generate a fixed value of DRONE_SECRET different than the value of [DRONE_RPC_SECRET]
+      # DRONE_SECRET is used by drone runners to make use of the drone vault plugin
+      - DRONE_SECRET=${DRONE_VAULT_RUNNERS_SECRET}
+      # - DRONE_SECRET=provide_drone_vault_token_key_by_jyao
+      # - TZ=Asia/Shanghai
+      - TZ=Europe/Paris
+    networks:
+      drone_net:
+        aliases:
+          - drone-vault
+          - drone-vault.pok-us.io
+    ports:
+      - "0.0.0.0:4300:3000"
+
+
+  # ---
+  # --- HASHICORP VAULT
+  # ---
+  # https://www.misterpki.com/vault-docker/
+
+  vault_server:
+    image: vault:latest
+    # ports:
+    #   - "8200:8200"
+    expose:
+      - 8200
+    environment:
+      - VAULT_ADDR=http://0.0.0.0:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=$VAULT_DEV_ROOT_TOKEN_ID
+    cap_add:
+      - IPC_LOCK
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.10
+        aliases:
+          - vault_server.pok-us.io
+      drone_net:
+        aliases:
+          - vault_server.pok-us.io
+  vault-client:
+    build:
+      context: vault/oci/client/
+      dockerfile: pokus.Dockerfile
+      args:
+        - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+    environment:
+      - VAULT_ADDR=http://vault_server:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=$VAULT_DEV_ROOT_TOKEN_ID
+      - GITEA_SHARED_SECRETS_HOME=/pokus/.shared.secrets
+      - POKUS_DRONE_VAULT_TOKEN_SECRET_PATH=/pokus/.shared.secrets/dev/drone-runner/vault.token
+      - POKUS_HUBOT_VAULT_TOKEN_SECRET_PATH=/pokus/.shared.secrets/dev/hubot/vault.token
+      # HUBOT/POKUSBOT SECRETS
+      - HUBOT_GIT_USER_GPG_SIGNING_KEY=PDSDO545KUSBO5874TGSD
+      - HUBOT_GIT_USER_NAME=pokusbot
+      - HUBOT_GIT_USER_EMAIL=pokusbot@pok-us.io
+    volumes:
+      # -
+      - pokus_shared_secrets_folder:/pokus/.shared.secrets:rw
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.20
+        aliases:
+          - vault_client.pok-us.io
+      drone_net:
+        aliases:
+          - vault_client.pok-us.io
+
+  # ---
+  # --- Minio Database for DRONE
+  # ---
+  # starts 4 docker containers running minio server instances.
+  # using caddy reverse proxy, load balancing, you can access
+  # it through port 9000.
+  minio1:
+    <<: *minio-common
+    hostname: minio1
+    volumes:
+      - minio_data1_1:/data1
+      - minio_data1_2:/data2
+      # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+
+  minio2:
+    <<: *minio-common
+    hostname: minio2
+    volumes:
+      - minio_data2_1:/data1
+      - minio_data2_2:/data2
+      # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+
+  minio3:
+    <<: *minio-common
+    hostname: minio3
+    volumes:
+      - minio_data3_1:/data1
+      - minio_data3_2:/data2
+      # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+
+  minio4:
+    <<: *minio-common
+    hostname: minio4
+    volumes:
+      - minio_data4_1:/data1
+      - minio_data4_2:/data2
+      # - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /usr/share/zoneinfo/Europe/Paris:/etc/localtime:ro
+
+  # ---
+  # --- N8n
+  # next todo : use a localhost tunnel instead of ngrok ? see https://github.com/pokusio/hubot-workshop/issues/24
+  n8n_postgres_db:
+    image: postgres:13
+    restart: always
+    container_name: n8n_postgres_db
+    environment:
+      - POSTGRES_USER=$N8N_POSTGRES_USER
+      # - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=$N8N_POSTGRES_PASSWORD
+      # - POSTGRES_PASSWORD=n8n
+      - POSTGRES_DB=$N8N_POSTGRES_DB
+      # - POSTGRES_DB=n8n
+      # - POSTGRES_NON_ROOT_USER=$N8N_POSTGRES_NON_ROOT_USER
+      # - POSTGRES_NON_ROOT_PASSWORD=$N8N_POSTGRES_NON_ROOT_PASSWORD
+    # volumes:
+      # I think you should use the [init-data.sh] to automatically create webhooks at statup time of n8n
+      # - ./n8n/postgres_db/init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    networks:
+      gitea_net:
+        aliases:
+          - n8n_postgres_db.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - n8n_postgres_db.pok-us.io
+  n8n:
+    image: n8nio/n8n
+    restart: always
+    container_name: n8n_service1
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=n8n_postgres_db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${N8N_POSTGRES_DB}
+      # - DB_POSTGRESDB_USER=${N8N_POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_USER=${N8N_POSTGRES_USER}
+      # - DB_POSTGRESDB_PASSWORD=${N8N_POSTGRES_NON_ROOT_PASSWORD}
+      - DB_POSTGRESDB_PASSWORD=${N8N_POSTGRES_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=pokus
+      - N8N_BASIC_AUTH_PASSWORD=pokus
+    ports:
+      - 5678:5678
+    # links:
+      # - postgres
+    volumes:
+      # - ~/.n8n:/home/node/.n8n
+      - dot_n8n_data_service1:/home/node/.n8n
+      - n8n_postgres_data:/var/lib/postgresql/data
+    # Wait 5 seconds to start n8n to make sure that PostgreSQL is ready
+    # when n8n tries to connect to it
+    command: /bin/sh -c "sleep 5; n8n start"
+    networks:
+      gitea_net:
+        aliases:
+          - n8n.pok-us.io
+          # n8n.internal.pok-us.io : to load balance with Caddy from within inside the docker World
+          - n8n.internal.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - n8n.pok-us.io
+          - n8n.internal.pok-us.io
+
+
+  # --- --- --- --- --- #
+  # --- APPSMITH
+  appsmith:
+    image: index.docker.io/appsmith/appsmith-ce
+    container_name: appsmith_server
+    expose:
+      - 80
+      - 443
+      - 9001
+    # --- exposed only through reverse proxy
+    # ports:
+      # - "80:80"
+      # - "443:443"
+      # - "9001:9001"
+    volumes:
+      - appsmith_stacks_data:/appsmith-stacks
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    networks:
+      gitea_net:
+        aliases:
+          - appsmith.pok-us.io
+          - appsmith.internal.pok-us.io
+          # - alias3
+      drone_net:
+        aliases:
+          - appsmith.pok-us.io
+          - appsmith.internal.pok-us.io
+
+  auto_update:
+    image: containrrr/watchtower:latest-dev
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # Update check interval in seconds.
+    command: --interval 300 --label-enable --cleanup

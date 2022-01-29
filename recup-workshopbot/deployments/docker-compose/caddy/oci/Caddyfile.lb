@@ -1,0 +1,306 @@
+{
+local_certs
+}
+
+gitea.pok-us.io {
+	reverse_proxy http://gitea_server:3000
+}
+
+drone.pok-us.io {
+	# reverse_proxy https://drone_server:443
+	reverse_proxy http://drone_server:80
+
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+}
+
+chat.pok-us.io {
+	reverse_proxy http://rocketchat:3000
+}
+
+pokusbot.pok-us.io {
+	reverse_proxy http://hubot:3000
+}
+
+
+vault.pok-us.io {
+	reverse_proxy http://vault_server:8200
+}
+
+minio.pok-us.io:9000 {
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+
+	# https://caddyserver.com/docs/caddyfile/directives/respond
+	# Replace backends health checks and provide one for this LB
+	respond /health 200
+
+	# https://caddyserver.com/docs/caddyfile/directives/tls
+	# tls pokusbot@pok-us.io {
+	# 	dns gandi {env.GANDI_API_TOKEN}
+
+	# 	# Remove this line to enable Let's Encrypt production certificate
+	# 	ca https://acme-staging-v02.api.letsencrypt.org/directory
+	# }
+
+	# https://caddyserver.com/docs/caddyfile/directives/log
+	log {
+		output stdout
+		format console
+	}
+
+	# https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+	reverse_proxy * {
+		# Specify backend here
+		# to 127.0.0.1:8001
+		# to 127.0.0.1:8002
+		# to 127.0.0.1:8003
+		to minio1:9000
+		to minio2:9000
+		to minio3:9000
+		to minio4:9000
+		lb_policy round_robin
+		lb_try_duration 1s
+		lb_try_interval 250ms
+
+		health_path     /health # Backend health check path
+		# health_port     80 # Default same as backend port
+		health_interval 10s
+		health_timeout  2s
+		health_status   200
+	}
+}
+
+minio.pok-us.io:9001 {
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+
+	# https://caddyserver.com/docs/caddyfile/directives/respond
+	# Replace backends health checks and provide one for this LB
+	respond /health 200
+
+	# https://caddyserver.com/docs/caddyfile/directives/tls
+	# tls pokusbot@pok-us.io {
+	# 	dns gandi {env.GANDI_API_TOKEN}
+
+	# 	# Remove this line to enable Let's Encrypt production certificate
+	# 	ca https://acme-staging-v02.api.letsencrypt.org/directory
+	# }
+
+	# https://caddyserver.com/docs/caddyfile/directives/log
+	log {
+		output stdout
+		format console
+	}
+
+	# https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+	reverse_proxy * {
+		# Specify backend here
+		# to 127.0.0.1:8001
+		# to 127.0.0.1:8002
+		# to 127.0.0.1:8003
+		to minio1:9001
+		to minio2:9001
+		to minio3:9001
+		to minio4:9001
+		lb_policy round_robin
+		lb_try_duration 1s
+		lb_try_interval 250ms
+
+		health_path     /health # Backend health check path
+		# health_port     80 # Default same as backend port
+		health_interval 10s
+		health_timeout  2s
+		health_status   200
+	}
+}
+
+
+# External http access to n8n :
+n8n.pok-us.io {
+	# reverse_proxy https://drone_server:443
+	reverse_proxy http://n8n_service1:5678
+
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+}
+
+
+
+appsmith.pok-us.io {
+	# reverse_proxy https://appsmith_server:443
+	reverse_proxy http://appsmith_server:80
+
+	# https://caddyserver.com/docs/caddyfile/directives/push
+	push
+
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode zstd gzip
+
+	# https://caddyserver.com/docs/caddyfile/directives/metrics
+	metrics /metrics
+
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	header {
+		# Hide "Server: Caddy"
+		-Server
+
+		# prevent attacks such as Cross Site Scripting (XSS)
+		# Content-Security-Policy default-src 'self' *.cloud.skynewz.dev
+		Content-Security-Policy default-src 'self' *.pok-us.io
+
+		# enable the cross-site scripting (XSS) filter built into modern web browsers
+		X-XSS-Protection 1; mode=block
+
+		# ensures the connection cannot be establish through an insecure HTTP connection
+		Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# provides clickjacking protection. Disable iframes
+		X-Frame-Options: SAMEORIGIN
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+}

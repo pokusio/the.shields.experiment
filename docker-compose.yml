@@ -1,6 +1,31 @@
 version: '3.7'
 
+networks:
+  shields_net:
+  caddy_net:
+
+volumes:
+  # ---
+  #
+  # ---
+  # caddy_root_ca_data allows sharing caddy pki rootca cert with other containers
+  # sure docker-compose down does not delete the volume.
+  caddy_root_ca_data:
+    driver: local
+  # ---
+  #
+  # ---
+  # Defining the data volume as external makes
+  # sure docker-compose down does not delete the volume.
+  caddy_data:
+    external: true
+  caddy_config:
+
+
 services:
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
+  # -- Badge Server
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
   shields_service:
     container_name: shields_badges
     # image: quay.io/gravitee-lab/pull-request-bot:${DOCKER_TAG} stable-latest
@@ -17,11 +42,21 @@ services:
       - 0.0.0.0:6080:$SHIELDS_PORT
     volumes:
       - $PWD/config/pokus.yml:/usr/src/app/config/local.yml
-    # entrypoint: /bin/sh
-    # stdin_open: true
-    # tty: true
-    # volumes:
-      # - $PWD/shields/data:/path/to/folder/in/container
+      # ROOT CA OF CADDY :
+      - POKUS_GITEA_REV_PROXY_ROOT_CA_CERT=/pokus/caddy/pki/authorities/local/root.crt
+    networks:
+      shields_net:
+        aliases:
+          - shields.pok-us.io
+      caddy_net:
+        aliases:
+          - shields.pok-us.io
+          # - alias3
+    extra_hosts:
+      - "shields.pok-us.io:$DOCK_HOST_IP_ADDR"
+
+
+
 
   # -------------
   # For PNG images in shields.io service (extremely beautiful badges :*)
@@ -41,3 +76,61 @@ services:
       - 0.0.0.0:5079:$SHIELDS_PORT
     # volumes:
       # - $PWD/shields/data:/path/to/folder/in/container
+    networks:
+      shields_net:
+        aliases:
+          - raster.pok-us.io
+      caddy_net:
+        aliases:
+          - raster.pok-us.io
+          # - alias3
+    extra_hosts:
+      - "raster.pok-us.io:$DOCK_HOST_IP_ADDR"
+
+
+
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
+  # -- Caddy Reverse Proxy
+  # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- #
+  # https://hub.docker.com/_/caddy
+  # --------------- CERTIFICATES MANAGEMENT --------------- #
+  #  Caddy automatically manage certificates acting as its own internal PKI, see Caddyfile [local_certs] directive
+  # ---
+  # docker run -d -p 80:80 -p 443:443 \
+  #     -v /site:/srv \
+  #     -v caddy_data:/data \
+  #     -v caddy_config:/config \
+  #     caddy caddy file-server --domain example.com
+  # ---
+  pokus_reverse_proxy:
+    # command: /usr/bin/caddy file-server --domain caddy.pok-us.io
+    image: pokusio/caddy:caddy-$POKUS_CADDY_VERSION
+    restart: unless-stopped
+    build:
+      context: caddy/oci/
+      dockerfile: pokus.Dockerfile
+      args:
+        - POKUS_CADDY_VERSION=$POKUS_CADDY_VERSION
+    container_name: pokus_reverse_proxy
+    environment:
+      # - POKUS_CADDYFILE=Caddyfile
+      - POKUS_CADDYFILE=Caddyfile.lb
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9001:9001"
+      - "9000:9000"
+    volumes:
+      # - $PWD/caddy/config.server/Caddyfile:/pokus/config/Caddyfile
+      # - $PWD/site:/srv
+      # - caddy_data:/data
+      - caddy_root_ca_data:/data/caddy/pki/authorities/local:rw
+      - caddy_config:/config
+      # - $PWD/pokus/tls/rootca/ca-cert.pem:/data/caddy/pki/authorities/local/root.crt
+      - $PWD/pokus/tls/rootca/ca-cert.pem:/pokus/tls/rootca/ca-cert.pem
+      - $PWD/pokus/tls/rootca/ca-key.pem:/pokus/tls/rootca/ca-key.pem
+    networks:
+      caddy_net:
+        aliases:
+          - caddy.pok-us.io
+          # - alias3

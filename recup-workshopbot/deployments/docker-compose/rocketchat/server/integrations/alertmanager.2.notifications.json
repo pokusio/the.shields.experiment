@@ -1,0 +1,52 @@
+{
+  "url": {
+    "hash": null,
+    "search": null,
+    "query": {},
+    "pathname": "/hooks/SQuzrZGhBPE4pmqu3/HumJLpRKjWxFwKF3TQiNWvEwEfkhMEqPYZKxK7onKZtjHfZf",
+    "path": "/hooks/SQuzrZGhBPE4pmqu3/HumJLpRKjWxFwKF3TQiNWvEwEfkhMEqPYZKxK7onKZtjHfZf"
+  },
+  "url_raw": "/hooks/SQuzrZGhBPE4pmqu3/HumJLpRKjWxFwKF3TQiNWvEwEfkhMEqPYZKxK7onKZtjHfZf",
+  "url_params": {
+    "integrationId": "SQuzrZGhBPE4pmqu3",
+    "token": "HumJLpRKjWxFwKF3TQiNWvEwEfkhMEqPYZKxK7onKZtjHfZf"
+  },
+  "content": {
+    "alias": "El Pokuso Bot",
+    "emoji": ":ghost: :man_cartwheeling_light_skin_tone:",
+    "text": "Le texte du Webhook",
+    "attachments": [{
+      "title": "Rocket.Chat",
+      "title_link": "https://rocket.chat",
+      "image_url": "/images/integration-attachment-example.png",
+      "color": "#764FA5"
+    }]
+  },
+  "content_raw": null,
+  "headers": {
+    "host": "chat.pok-us.io",
+    "user-agent": "curl/7.68.0",
+    "content-length": "413",
+    "accept": "*/*",
+    "content-type": "application/json",
+    "x-forwarded-for": "192.168.1.102",
+    "x-forwarded-proto": "https",
+    "accept-encoding": "gzip"
+  },
+  "body": {
+    "alias": "El Pokuso Bot",
+    "emoji": ":ghost: :man_cartwheeling_light_skin_tone:",
+    "text": "Le texte du Webhook",
+    "attachments": [{
+      "title": "Rocket.Chat",
+      "title_link": "https://rocket.chat",
+      "image_url": "/images/integration-attachment-example.png",
+      "color": "#764FA5"
+    }]
+  },
+  "user": {
+    "_id": "qSmZ33GubXpnriTDR",
+    "name": "pokusbot",
+    "username": "pokusbot"
+  }
+}

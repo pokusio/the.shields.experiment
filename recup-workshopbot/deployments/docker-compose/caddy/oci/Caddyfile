@@ -1,0 +1,23 @@
+{
+local_certs
+}
+
+gitea.pok-us.io {
+	reverse_proxy http://gitea_server:3000
+}
+
+drone.pok-us.io {
+	reverse_proxy http://drone_server:80
+}
+
+chat.pok-us.io {
+	reverse_proxy http://rocketchat:3000
+}
+
+pokusbot.pok-us.io {
+	reverse_proxy http://hubot:3000
+}
+
+vault.pok-us.io {
+	reverse_proxy http://vault_server:8200
+}

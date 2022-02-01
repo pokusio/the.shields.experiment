@@ -31,15 +31,15 @@ services:
     # image: quay.io/gravitee-lab/pull-request-bot:${DOCKER_TAG} stable-latest
     image: docker.io/shieldsio/shields:$SHIELDS_VERSION
     environment:
-      - PORT=$SHIELDS_PORT
+      - PORT=3000
       # RASTER_SERVER : https://raster.pok-us.io
-      - RASTER_SERVER=http://${DOCKHOST_IP_ADDR}:5079/
+      - RASTER_SERVER=http://${DOCK_HOST_IP_ADDR}:5079/
     # env_file:
       # - .compose.env # atually no, same [.env] file ... ?
     env_file:
       - .compose.env
     ports:
-      - 0.0.0.0:6080:$SHIELDS_PORT
+      - 0.0.0.0:6080:3000
     volumes:
       - $PWD/config/pokus.yml:/usr/src/app/config/local.yml
       # ROOT CA OF CADDY :
@@ -69,11 +69,11 @@ services:
         # + ...
         - CARGO_BUILD_MODE=release
     environment:
-      - PORT=$SHIELDS_PORT
+      - PORT=3000
     env_file:
-      - .compose.env
+      - $PWD/.compose.env
     ports:
-      - 0.0.0.0:5079:$SHIELDS_PORT
+      - 0.0.0.0:5079:3000
     # volumes:
       # - $PWD/shields/data:/path/to/folder/in/container
     networks:

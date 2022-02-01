@@ -184,6 +184,7 @@ sed -i "s#POKUS_ADMIN_USER_PLACEHOLDER#${POKUS_ADMIN_USER}#g" ./.prod.env
 sed -i "s#POKUS_ADMIN_PASSWORD_PLACEHOLDER#${POKUS_ADMIN_PASSWORD}#g" ./.prod.env
 
 sed -i "s#DOCK_HOST_IP_ADDR_PLACEHOLDER#${DOCK_HOST_IP_ADDR}#g" ./.prod.env
+sed -i "s#POKUS_OCI_REGISTRY_PLACEHOLDER#${POKUS_OCI_REGISTRY}#g" ./.prod.env
 
 
 echo "# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #"
@@ -269,6 +270,9 @@ echo "# -- volume for caddy, or we will get an error"
 export CURRFOL=$(echo "$(pwd)" | awk -F '/' '{print $NF}')
 echo "CURRFOL=[${CURRFOL}]"
 
+docker volume rm ${CURRFOL}_caddy_config || exit 67
+docker volume rm ${CURRFOL}_caddy_data || exit 67
+
 docker volume create ${CURRFOL}_caddy_config || exit 67
 docker volume create ${CURRFOL}_caddy_data || exit 67
 docker volume create caddy_config || exit 67
@@ -277,13 +281,6 @@ echo "# -- volume for caddy, successfully created."
 docker volume ls
 echo "# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #"
 
-
-docker network create rocketchat_net
-
-export WHERE_IAM=$(pwd)
-cd ${WHERE_IAM}/jitsi
-launchJITSI
-cd ${WHERE_IAM}
 
 docker-compose up -d
 

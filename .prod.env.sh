@@ -6,6 +6,9 @@ export POKUS_LX_NET_INTERFACE=${POKUS_LX_NET_INTERFACE:-"enp0s3"}
 export DOCK_HOST_IP_ADDR=$(ip addr | grep -EA2 ${POKUS_LX_NET_INTERFACE} | grep 192 | awk '{print $2}' | awk -F '/' '{print $1}')
 # echo "DOCK_HOST_IP_ADDR=[${DOCK_HOST_IP_ADDR}]"
 
+
+export POKUS_OCI_REGISTRY="${DOCK_HOST_IP_ADDR}:5000"
+
 # https://docs.gitea.io/en-us/install-with-docker/#configure-the-user-inside-gitea-using-environment-variables
 # in the base gitea image, the non-root user is already created, with name "git"
 export POKUS_USER=git
@@ -37,3 +40,6 @@ export VAULT_DEV_ROOT_TOKEN_ID=pokus_vault_dev_root_token_id
 
 export POKUS_ADMIN_USER=pokus
 export POKUS_ADMIN_PASSWORD=pokus5432
+
+
+export SHIELDS_VERSION=latest

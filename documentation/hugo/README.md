@@ -203,7 +203,7 @@ git flow release finish -s ${RELEASE_VERSION} && git push -u origin --all  && gi
 
 export DEPLOYMENT_DOMAIN=docs.shields-pok-us.io
 export DEPLOYMENT_BASE_URL=https://${DEPLOYMENT_DOMAIN}
-export DEPLOYMENT_BASE_URL=https://pokusio.github.io/the.shields.experiment/
+export DEPLOYMENT_BASE_URL=https://pokusio-shields.surge.sh
 
 if [ -d ./docs ]; then
  rm -fr ./docs

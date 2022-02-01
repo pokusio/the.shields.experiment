@@ -1,61 +1,103 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hugo Whisper Docs on Hugo Whisper Theme</title>
-    <link>https://pokus-shields.github.io/documentation/</link>
-    <description>Recent content in Hugo Whisper Docs on Hugo Whisper Theme</description>
+    <title>Pokus: The Shields Experiment on The Shields Experiment</title>
+    <link>https://pokusio-shields.surge.sh/</link>
+    <description>Recent content in Pokus: The Shields Experiment on The Shields Experiment</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate><atom:link href="https://pokus-shields.github.io/documentation/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 28 Jan 2022 15:14:39 +1000</lastBuildDate><atom:link href="https://pokusio-shields.surge.sh/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Install Hugo</title>
-      <link>https://pokus-shields.github.io/documentation/docs/install-hugo/</link>
+      <title>Goals</title>
+      <link>https://pokusio-shields.surge.sh/docs/goals/</link>
       <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
       
-      <guid>https://pokus-shields.github.io/documentation/docs/install-hugo/</guid>
+      <guid>https://pokusio-shields.surge.sh/docs/goals/</guid>
       <description>To use this theme you will need to have Hugo installed. If you don&amp;rsquo;t already have Hugo installed please follow the official installation guide
 Check Hugo Version This theme uses Hugo Pipes to compile SCSS and minify assets. Please make sure you have the Hugo Extended version installed. If you are not using the extended version this theme will not not compile.
 hugo version </description>
     </item>
     
     <item>
-      <title>Install Theme</title>
-      <link>https://pokus-shields.github.io/documentation/docs/install-theme/</link>
+      <title>Architecture</title>
+      <link>https://pokusio-shields.surge.sh/docs/architecture/</link>
       <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
       
-      <guid>https://pokus-shields.github.io/documentation/docs/install-theme/</guid>
-      <description>Create a new Hugo site hugo new site mynewsite This will create a fresh Hugo site in the folder mynewsite.
-Install theme Copy or git clone this theme into the sites themes folder mynewsite/themes
-Install with Git cd mynewsite cd themes git clone https://github.com/jugglerx/hugo-whisper-theme.git Install from .zip file You can download the .zip file located here https://github.com/JugglerX/hugo-whisper-theme/archive/master.zip.
-Extract the downloaded .zip inside the themes folder. Rename the extracted folder from hugo-whisper-theme-master -&amp;gt; hugo-whisper-theme.</description>
+      <guid>https://pokusio-shields.surge.sh/docs/architecture/</guid>
+      <description>Design Let&amp;rsquo;s go back to the main idea : we want a visitor counter.
+hugo improvements  make a new Hugo shortcode to have image viewer zommer :  using https://codepen.io/olsiodobashi/pen/YpeMae it&amp;rsquo;s typescript, so i do need my hugo augmented for that (a hugo/typescript one) other alternative codepens : https://codepen.io/search/pens?q=+full+screen+image&amp;amp;cursor=ZD0xJm89MCZwPTc=    </description>
     </item>
     
     <item>
       <title>Configuration</title>
-      <link>https://pokus-shields.github.io/documentation/docs/configure/</link>
+      <link>https://pokusio-shields.surge.sh/docs/configure/</link>
       <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
       
-      <guid>https://pokus-shields.github.io/documentation/docs/configure/</guid>
-      <description>Syntax highlighting and menus can be configured via &lt;code&gt;config.toml&lt;/code&gt;.</description>
+      <guid>https://pokusio-shields.surge.sh/docs/configure/</guid>
+      <description>Shields.io Configuration via &lt;code&gt;config/pokus.yml&lt;/code&gt;.</description>
+    </item>
+    
+    <item>
+      <title>Configuration</title>
+      <link>https://pokusio-shields.surge.sh/docs/tls/</link>
+      <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
+      
+      <guid>https://pokusio-shields.surge.sh/docs/tls/</guid>
+      <description>Shields.io Configuration via &lt;code&gt;config/pokus.yml&lt;/code&gt;.</description>
     </item>
     
     <item>
       <title>Specimen</title>
-      <link>https://pokus-shields.github.io/documentation/docs/specimen/</link>
+      <link>https://pokusio-shields.surge.sh/docs/specimen/</link>
       <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
       
-      <guid>https://pokus-shields.github.io/documentation/docs/specimen/</guid>
+      <guid>https://pokusio-shields.surge.sh/docs/specimen/</guid>
       <description>Markdown Test Page  Headings Paragraphs Blockquotes Lists Horizontal rule Table Code Inline elements   Headings Heading one Sint sit cillum pariatur eiusmod nulla pariatur ipsum. Sit laborum anim qui mollit tempor pariatur nisi minim dolor. Aliquip et adipisicing sit sit fugiat commodo id sunt. Nostrud enim ad commodo incididunt cupidatat in ullamco ullamco Lorem cupidatat velit enim et Lorem.
 Heading two Aute officia nulla deserunt do deserunt cillum velit magna.</description>
     </item>
     
     <item>
       <title>Hugo Whisper</title>
-      <link>https://pokus-shields.github.io/documentation/docs/example/</link>
+      <link>https://pokusio-shields.surge.sh/docs/example/</link>
       <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
       
-      <guid>https://pokus-shields.github.io/documentation/docs/example/</guid>
+      <guid>https://pokusio-shields.surge.sh/docs/example/</guid>
       <description>&lt;p&gt;Whisper is a minimal documentation theme built for Hugo. The design &amp;amp; functionality is intentionally minimal.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Asciinema</title>
+      <link>https://pokusio-shields.surge.sh/docs/asciinema/</link>
+      <pubDate>Sat, 29 Jan 2022 19:27:37 +1000</pubDate>
+      
+      <guid>https://pokusio-shields.surge.sh/docs/asciinema/</guid>
+      <description>The best cinema, for the best study
+Install asciinema see https://asciinema.org/docs/installation
+Record  execute the following command :  asciinema rec -t &amp;#34;openfaas demo&amp;#34; openfaas.json  type exit or Ctrl + D to stop the recording.  Convert from json to gif.   See npm package https://github.com/asciinema/asciicast2gif and docker pull asciinema/asciicast2gif
+  converting the said images :
+  docker pull asciinema/asciicast2gif # docker run --rm -v $PWD:/data asciinema/asciicast2gif [options and arguments.</description>
+    </item>
+    
+    <item>
+      <title>References</title>
+      <link>https://pokusio-shields.surge.sh/docs/references/</link>
+      <pubDate>Sat, 29 Jan 2022 10:13:37 +1050</pubDate>
+      
+      <guid>https://pokusio-shields.surge.sh/docs/references/</guid>
+      <description>Shields.io :
+ https://shields.io/category/social oh purée tous les compteurs !!! chercher le compteur de visites    Host your own:
+ about running : https://github.com/badges/shields/blob/master/doc/self-hosting.md about secrets management : https://github.com/badges/shields/blob/master/doc/server-secrets.md     About the CDN topic :
+ that&amp;rsquo;s where I wanna go I wanna provide a solution where we nuild our own dedicated CDN, using KubeCDN One tutorial about KubeCDN : https://blog.insightdatascience.com/how-to-build-your-own-cdn-with-kubernetes-5cab00d5c258 KubeCDN repo :    About Secrets Management and CORS It is possible to provide a token or credentials for a number of external services:</description>
+    </item>
+    
+    <item>
+      <title>Silently Generate SSH Keys</title>
+      <link>https://pokusio-shields.surge.sh/docs/ssh/</link>
+      <pubDate>Sat, 29 Jan 2022 10:13:37 +1050</pubDate>
+      
+      <guid>https://pokusio-shields.surge.sh/docs/ssh/</guid>
+      <description>Here is how to silently generate an SSH Key Pair :
+# ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- Generate the RSA SSH Key Pair used : # -- # -- for the first super admin user in shields # -- # -- for the SSH git user of th Shields SSH Server # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # export LE_COMMENTAIRE_DE_CLEF=&amp;#34;robots@shields.</description>
     </item>
     
   </channel>

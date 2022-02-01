@@ -4,14 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Overview - Hugo Whisper Theme</title>
+  <title>Overview - The Shields Experiment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="https://pokus-shields.github.io/documentation/favicon.png">
+  <link rel="icon" href="https://pokusio-shields.surge.sh/favicon.png">
 
   
   
-  <link rel="stylesheet" href="/documentation/scss/style.scss">
+  <link rel="stylesheet" href="/css/style.min.6aa5eecd4ca7c47fb2ca9b0775a7bd787e3e64a2eadf0fef8c9f924498f49127.css">
   
 
   
@@ -24,13 +24,13 @@
     
     
     <li class="menu-item-home">
-      <a href="/documentation/">
+      <a href="/">
         <span>Home</span>
       </a>
     </li>
     
     <li class="menu-item-docs active">
-      <a href="/documentation/docs/">
+      <a href="/docs/">
         <span>Docs</span>
       </a>
     </li>
@@ -41,23 +41,23 @@
     <div class='header'>
   <div class="container">
     <div class="logo">
-      <a href="https://pokus-shields.github.io/documentation/"><img alt="Logo" src="/documentation/images/logo.svg" /></a>
+      <a href="https://pokusio-shields.surge.sh"><img alt="Logo" src="/images/logo.svg" /></a>
     </div>
     <div class="logo-mobile">
-      <a href="https://pokus-shields.github.io/documentation/"><img alt="Logo" src="/documentation/images/logo-mobile.svg" /></a>
+      <a href="https://pokusio-shields.surge.sh"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
     </div>
     <div id="main-menu" class="main-menu">
   <ul>
     
     
     <li class="menu-item-home">
-      <a href="/documentation/">
+      <a href="/">
         <span>Home</span>
       </a>
     </li>
     
     <li class="menu-item-docs active">
-      <a href="/documentation/docs/">
+      <a href="/docs/">
         <span>Docs</span>
       </a>
     </li>
@@ -91,23 +91,39 @@
   <ul>
     
     <li class="">
-      <a href="https://pokus-shields.github.io/documentation/docs/install-hugo/">Install Hugo</a>
+      <a href="https://pokusio-shields.surge.sh/docs/goals/">Goals</a>
     </li>
     
     <li class="">
-      <a href="https://pokus-shields.github.io/documentation/docs/install-theme/">Install Theme</a>
+      <a href="https://pokusio-shields.surge.sh/docs/architecture/">Architecture</a>
     </li>
     
     <li class="">
-      <a href="https://pokus-shields.github.io/documentation/docs/configure/">Configuration</a>
+      <a href="https://pokusio-shields.surge.sh/docs/configure/">Configuration</a>
     </li>
     
     <li class="">
-      <a href="https://pokus-shields.github.io/documentation/docs/specimen/">Specimen</a>
+      <a href="https://pokusio-shields.surge.sh/docs/tls/">Configuration</a>
     </li>
     
     <li class="">
-      <a href="https://pokus-shields.github.io/documentation/docs/example/">Hugo Whisper</a>
+      <a href="https://pokusio-shields.surge.sh/docs/specimen/">Specimen</a>
+    </li>
+    
+    <li class="">
+      <a href="https://pokusio-shields.surge.sh/docs/example/">Hugo Whisper</a>
+    </li>
+    
+    <li class="">
+      <a href="https://pokusio-shields.surge.sh/docs/asciinema/">Asciinema</a>
+    </li>
+    
+    <li class="">
+      <a href="https://pokusio-shields.surge.sh/docs/references/">References</a>
+    </li>
+    
+    <li class="">
+      <a href="https://pokusio-shields.surge.sh/docs/ssh/">Silently Generate SSH Keys</a>
     </li>
     
   </ul>
@@ -121,15 +137,26 @@
 <span class="overview">Overview</span>
 <h1 class="title">Overview</h1>
 <div class="content">
-  <h2 id="whisper-theme">Whisper Theme</h2>
-<p>Whisper is a minimal documentation theme for Hugo. The design and functionality is intentionally minimal. We’re aiming for a similar feel to a Github readme.</p>
+  <h2 id="the-shields-experiment">The Shields Experiment</h2>
+<p>One day, i learned how quickly you can set up a visitor counter using <code>visitor-badge.glitch.me</code>.</p>
+<p>That Day, I realized how beautifully powerful the badge pattern can be: try and implement from scratch a visitor counter, that can count visits with a different counter for every page&hellip;</p>
+<p>All in all, this work is about designing an architecture for a static website :</p>
+<ul>
+<li>the static website is managed with one of the following CMS : <code>hugo</code>, <code>Gatsby</code>, <code>Directus</code>, etc&hellip;</li>
+<li>the static website has many features thanks to badges :
+<ul>
+<li>visitor counter</li>
+<li>[soon more..]</li>
+</ul>
+</li>
+</ul>
 
 </div>
 
 
 <div class="summary mb-2">
   
-  <h2 class="title-summary"><a href="https://pokus-shields.github.io/documentation/docs/install-hugo/">Install Hugo</a></h2>
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/goals/">Goals</a></h2>
   <p>To use this theme you will need to have Hugo installed. If you don&rsquo;t already have Hugo installed please follow the official installation guide
 Check Hugo Version This theme uses Hugo Pipes to compile SCSS and minify assets. Please make sure you have the Hugo Extended version installed. If you are not using the extended version this theme will not not compile.
 hugo version </p>
@@ -138,24 +165,29 @@ hugo version </p>
 
 <div class="summary mb-2">
   
-  <h2 class="title-summary"><a href="https://pokus-shields.github.io/documentation/docs/install-theme/">Install Theme</a></h2>
-  <p>Create a new Hugo site hugo new site mynewsite This will create a fresh Hugo site in the folder mynewsite.
-Install theme Copy or git clone this theme into the sites themes folder mynewsite/themes
-Install with Git cd mynewsite cd themes git clone https://github.com/jugglerx/hugo-whisper-theme.git Install from .zip file You can download the .zip file located here https://github.com/JugglerX/hugo-whisper-theme/archive/master.zip.
-Extract the downloaded .zip inside the themes folder. Rename the extracted folder from hugo-whisper-theme-master -&gt; hugo-whisper-theme.</p>
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/architecture/">Architecture</a></h2>
+  <p>Design Let&rsquo;s go back to the main idea : we want a visitor counter.
+hugo improvements  make a new Hugo shortcode to have image viewer zommer :  using https://codepen.io/olsiodobashi/pen/YpeMae it&rsquo;s typescript, so i do need my hugo augmented for that (a hugo/typescript one) other alternative codepens : https://codepen.io/search/pens?q=+full+screen+image&amp;cursor=ZD0xJm89MCZwPTc=    </p>
 </div>
 
 
 <div class="summary mb-2">
   
-  <h2 class="title-summary"><a href="https://pokus-shields.github.io/documentation/docs/configure/">Configuration</a></h2>
-  <p>Syntax highlighting and menus can be configured via <code>config.toml</code>.</p>
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/configure/">Configuration</a></h2>
+  <p>Shields.io Configuration via <code>config/pokus.yml</code>.</p>
 </div>
 
 
 <div class="summary mb-2">
   
-  <h2 class="title-summary"><a href="https://pokus-shields.github.io/documentation/docs/specimen/">Specimen</a></h2>
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/tls/">Configuration</a></h2>
+  <p>Shields.io Configuration via <code>config/pokus.yml</code>.</p>
+</div>
+
+
+<div class="summary mb-2">
+  
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/specimen/">Specimen</a></h2>
   <p>Markdown Test Page  Headings Paragraphs Blockquotes Lists Horizontal rule Table Code Inline elements   Headings Heading one Sint sit cillum pariatur eiusmod nulla pariatur ipsum. Sit laborum anim qui mollit tempor pariatur nisi minim dolor. Aliquip et adipisicing sit sit fugiat commodo id sunt. Nostrud enim ad commodo incididunt cupidatat in ullamco ullamco Lorem cupidatat velit enim et Lorem.
 Heading two Aute officia nulla deserunt do deserunt cillum velit magna.</p>
 </div>
@@ -163,8 +195,37 @@ Heading two Aute officia nulla deserunt do deserunt cillum velit magna.</p>
 
 <div class="summary mb-2">
   
-  <h2 class="title-summary"><a href="https://pokus-shields.github.io/documentation/docs/example/">Hugo Whisper</a></h2>
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/example/">Hugo Whisper</a></h2>
   <p><p>Whisper is a minimal documentation theme built for Hugo. The design &amp; functionality is intentionally minimal.</p></p>
+</div>
+
+
+<div class="summary mb-2">
+  
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/asciinema/">Asciinema</a></h2>
+  <p>The best cinema, for the best study
+Install asciinema see https://asciinema.org/docs/installation
+Record  execute the following command :  asciinema rec -t &#34;openfaas demo&#34; openfaas.json  type exit or Ctrl + D to stop the recording.  Convert from json to gif.   See npm package https://github.com/asciinema/asciicast2gif and docker pull asciinema/asciicast2gif
+  converting the said images :
+  docker pull asciinema/asciicast2gif # docker run --rm -v $PWD:/data asciinema/asciicast2gif [options and arguments.</p>
+</div>
+
+
+<div class="summary mb-2">
+  
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/references/">References</a></h2>
+  <p>Shields.io :
+ https://shields.io/category/social oh purée tous les compteurs !!! chercher le compteur de visites    Host your own:
+ about running : https://github.com/badges/shields/blob/master/doc/self-hosting.md about secrets management : https://github.com/badges/shields/blob/master/doc/server-secrets.md     About the CDN topic :
+ that&rsquo;s where I wanna go I wanna provide a solution where we nuild our own dedicated CDN, using KubeCDN One tutorial about KubeCDN : https://blog.insightdatascience.com/how-to-build-your-own-cdn-with-kubernetes-5cab00d5c258 KubeCDN repo :    About Secrets Management and CORS It is possible to provide a token or credentials for a number of external services:</p>
+</div>
+
+
+<div class="summary mb-2">
+  
+  <h2 class="title-summary"><a href="https://pokusio-shields.surge.sh/docs/ssh/">Silently Generate SSH Keys</a></h2>
+  <p>Here is how to silently generate an SSH Key Pair :
+# ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- Generate the RSA SSH Key Pair used : # -- # -- for the first super admin user in shields # -- # -- for the SSH git user of th Shields SSH Server # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # ++ # export LE_COMMENTAIRE_DE_CLEF=&#34;robots@shields.</p>
 </div>
 
 
@@ -182,7 +243,7 @@ Heading two Aute officia nulla deserunt do deserunt cillum velit magna.</p>
       <div class="col-12">
         <div class="sub-footer-inner">
           <ul>
-            <li class="pokus"><a href="https://www.pok-us.io">www.pok-us.io</a></li>
+            <li class="pokus"><a href="https://github.com/pokusio">w3.pok-us.io</a></li>
           </ul>
         </div>
       </div>
@@ -190,13 +251,14 @@ Heading two Aute officia nulla deserunt do deserunt cillum velit magna.</p>
   </div>
 </div>
 
+
   
 
   
   
 
   
-  <script type="text/javascript" src="/documentation/js/scripts.min.1237ff71925bb8625c97a9af8db4c54525258bedfd7c47493daaff723bea755e.js"></script>
+  <script type="text/javascript" src="/js/scripts.min.1237ff71925bb8625c97a9af8db4c54525258bedfd7c47493daaff723bea755e.js"></script>
   
 
   
